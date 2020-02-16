@@ -5,3 +5,5 @@
 2. https://towardsdatascience.com/colorizing-old-b-w-photos-and-videos-with-the-help-of-ai-76ba086f15ec
 3. https://arxiv.org/abs/1803.05400
 4. https://arxiv.org/abs/1907.09837
+5. https://lukemelas.github.io/image-colorization.html
+6. https://richzhang.github.io/ideepcolor/
