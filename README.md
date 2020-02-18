@@ -7,3 +7,4 @@
 4. https://arxiv.org/abs/1907.09837
 5. https://lukemelas.github.io/image-colorization.html
 6. https://richzhang.github.io/ideepcolor/
+7. https://www.learnopencv.com/convolutional-neural-network-based-image-colorization-using-opencv/
