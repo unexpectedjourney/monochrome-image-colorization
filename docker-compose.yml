@@ -1,0 +1,42 @@
+version: "3"
+services:
+  rabbitmq:
+    image: rabbitmq:3.8.3
+    restart: always
+    environment:
+      RABBITMQ_USER: root
+      RABBITMQ_PASSWORD: example
+
+  mongodb:
+    image: mongo:4.2.3
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+
+  api:
+    build:
+      context: .
+      dockerfile: ./api/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./api/:/usr/app/"
+      - "./utils/:/usr/app/utils/"
+    depends_on:
+      - rabbitmq
+      - mongodb
+
+  core:
+    build:
+      context: .
+      dockerfile: ./core/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./core/:/usr/app/"
+      - "./utils/:/usr/app/utils/"
+    depends_on:
+      - rabbitmq
+      - core
+
