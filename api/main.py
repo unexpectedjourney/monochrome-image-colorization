@@ -1,6 +1,8 @@
+import asyncio
+
 from aiohttp import web
 
-from api.message_handler import rabbitmq_message_handler
+from message_handler import rabbitmq_message_handler
 from utils.constants import RESPONSE_QUEUE
 from utils.logger import setup_logger
 from utils.rabbitmq.connector import RabbitMQConnection
@@ -16,18 +18,26 @@ async def status(request):
     })
 
 
-def main():
+async def main():
     log.info("API application setup has started")
     app = web.Application()
     app.add_routes(routes)
 
     rabbitmq = RabbitMQConnection()
-    rabbitmq.consume(RESPONSE_QUEUE, rabbitmq_message_handler(rabbitmq))
+    await rabbitmq.connect()
+    await rabbitmq.consume(RESPONSE_QUEUE, rabbitmq_message_handler(rabbitmq))
     app['rabbitmq'] = rabbitmq
 
-    web.run_app(app)
+    runner = web.AppRunner(app)
+    await runner.setup()
+
+    site = web.TCPSite(runner, port=8080)
+    await site.start()
+
     log.info("API application setup has finished")
 
 
 if __name__ == '__main__':
-    main()
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(main())
+    loop.run_forever()
