@@ -23,6 +23,7 @@ services:
     volumes:
       - "./api/:/usr/app/"
       - "./utils/:/usr/app/utils/"
+      - "./upload/:/usr/app/upload/"
     depends_on:
       - rabbitmq
       - mongodb
@@ -38,6 +39,7 @@ services:
     volumes:
       - "./core/:/usr/app/"
       - "./utils/:/usr/app/utils/"
+      - "./upload/:/usr/app/upload/"
     depends_on:
       - rabbitmq
     env_file:
@@ -51,11 +53,11 @@ services:
     ports:
       - "8082:8080"
     volumes:
-      - "./web/src/:/usr/app/src/"
-      - "./web/public/:/usr/app/public/"
+      - "./web/:/usr/app/"
+      - /usr/app/node_modules/
     command: "yarn run serve"
-#    depends_on:
-#      - api
+    depends_on:
+      - api
     env_file:
       - .env
 
