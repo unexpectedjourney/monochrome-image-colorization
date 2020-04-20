@@ -1,4 +1,4 @@
-version: "3"
+version: "3.7"
 services:
   rabbitmq:
     image: rabbitmq:3.8.3
@@ -40,6 +40,22 @@ services:
       - "./utils/:/usr/app/utils/"
     depends_on:
       - rabbitmq
+    env_file:
+      - .env
+
+  web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile
+      target: 'develop-stage'
+    ports:
+      - "8082:8080"
+    volumes:
+      - "./web/src/:/usr/app/src/"
+      - "./web/public/:/usr/app/public/"
+    command: "yarn run serve"
+#    depends_on:
+#      - api
     env_file:
       - .env
 
