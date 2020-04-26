@@ -1,13 +1,11 @@
+import sys
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import lsqr
 from skimage.color import rgb2yiq, yiq2rgb
-
-from utils.logger import setup_logger
-
-log = setup_logger(__name__)
 
 INPUT_DIR = "./input/"
 OUTPUT_DIR = "./output/"
@@ -89,23 +87,18 @@ def _colorize(image, marks):
 
                 for (neighbour_row, neighbour_col) in neighbours:
                     row_indices[absolute_index] = pixel_index
-                    col_indices[absolute_index] = image_indices[
-                        neighbour_row, neighbour_col]
-                    global_values[0, neighbour_index] = image[
-                        neighbour_row, neighbour_col, 0]
+                    col_indices[absolute_index] = image_indices[neighbour_row, neighbour_col]
+                    global_values[0, neighbour_index] = image[neighbour_row, neighbour_col, 0]
                     absolute_index += 1
                     neighbour_index += 1
 
                 current_pixel_val = image[row, col, 0]
                 global_values[0, neighbour_index] = current_pixel_val
 
-                inclusive_global_values = global_values[:,
-                                          0: neighbour_index + 1]
-                noninclusive_global_values = global_values[:,
-                                             0: neighbour_index]
+                inclusive_global_values = global_values[:, 0: neighbour_index + 1]
+                noninclusive_global_values = global_values[:, 0: neighbour_index]
 
-                variance = np.mean((inclusive_global_values - np.mean(
-                    inclusive_global_values)) ** 2)
+                variance = np.mean((inclusive_global_values - np.mean(inclusive_global_values)) ** 2)
                 sigma = variance * VARIANCE_MULTIPLIER
                 min_global_variance = np.min(
                     (noninclusive_global_values - current_pixel_val) ** 2)
@@ -114,11 +107,9 @@ def _colorize(image, marks):
                     sigma = -min_global_variance / np.log(0.01)
                 sigma = max(sigma, MIN_SIGMA)
 
-                something = np.exp(-(
-                                            noninclusive_global_values - current_pixel_val) ** 2 / sigma)
+                something = np.exp(-(noninclusive_global_values - current_pixel_val) ** 2 / sigma)
                 something = something / np.sum(something)
-                values[absolute_index - neighbour_index: absolute_index] = - (
-                    something.T)
+                values[absolute_index - neighbour_index: absolute_index] = - (something.T)
 
             row_indices[absolute_index] = pixel_index
             col_indices[absolute_index] = image_indices[row, col]
@@ -157,31 +148,20 @@ def colorize(original_filepath, marked_filepath, output_filepath):
     plt.imsave(output_filepath, output_image)
 
 
-# def main():
-#     args = sys.argv
-#     if len(args) > 1:
-#         filename = args[1]
-#         original_filepath = f"{INPUT_DIR}/{filename}"
-#         marked_filepath = f"{INPUT_DIR}/marked_{filename}"
-#         output_filepath = f"{OUTPUT_DIR}/{filename}"
-#
-#         # todo check files and dirs existence
-#         colorize(original_filepath, marked_filepath, output_filepath)
-#
-#     else:
-#         print("Please, write filename as argument")
-#
-#
-# if __name__ == '__main__':
-#     main()
+def main():
+    args = sys.argv
+    if len(args) > 1:
+        filename = args[1]
+        original_filepath = f"{INPUT_DIR}/{filename}"
+        marked_filepath = f"{INPUT_DIR}/marked_{filename}"
+        output_filepath = f"{OUTPUT_DIR}/{filename}"
 
-async def colorize_file(params):
-    log.info("Colorization has started")
-    filename = params.get("filename")
-    if not filename:
-        return
+        # todo check files and dirs existence
+        colorize(original_filepath, marked_filepath, output_filepath)
 
-    # part for image colorization
-    # todo should pass new filename
-    log.info("Colorization has finished")
-    return filename
+    else:
+        print("Please, write filename as argument")
+
+
+if __name__ == '__main__':
+    main()
