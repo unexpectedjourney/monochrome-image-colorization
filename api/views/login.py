@@ -41,7 +41,7 @@ async def login(request):
         return web.Response(status=HTTPStatus.BAD_REQUEST)
 
     hashed_password = encrypt_password(password)
-    user_data = await user.get_user(username)
+    user_data = await user.get_user(username=username)
     if user_data is None:
         return web.Response(status=HTTPStatus.BAD_REQUEST)
 

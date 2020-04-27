@@ -53,13 +53,13 @@ async def register(request):
         return web.Response(
             text="Passwords should be similar", status=HTTPStatus.BAD_REQUEST)
 
-    user_data = await user.get_user(username)
+    user_data = await user.get_user(username=username)
     if user_data is not None:
         return web.Response(
             text="User already exists", status=HTTPStatus.BAD_REQUEST)
 
     await user.insert_user_if_not_exist(username, encrypt_password(password1))
-    user_data = await user.get_user(username)
+    user_data = await user.get_user(username=username)
     log.info(user_data)
     user_id = str(user_data.get('_id'))
     jwt_token = generate_token(user_id)

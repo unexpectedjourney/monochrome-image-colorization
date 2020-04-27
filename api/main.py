@@ -6,6 +6,8 @@ from aiohttp_swagger import setup_swagger
 from message_handler import rabbitmq_message_handler
 
 from urls import get_routers
+
+from middlewares.login import auth_middleware
 from utils.constants import RESPONSE_QUEUE
 from utils.logger import setup_logger
 from utils.rabbitmq.connector import RabbitMQConnection
@@ -15,7 +17,8 @@ log = setup_logger(__name__)
 
 async def main():
     log.info("API application setup has started")
-    app = web.Application(client_max_size=2 ** 50)
+    app = web.Application(
+        client_max_size=2 ** 50, middlewares=[auth_middleware])
     get_routers(app)
 
     setup_swagger(app)
