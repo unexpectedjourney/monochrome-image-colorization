@@ -1,6 +1,6 @@
 FROM python:3.8.2-alpine3.11
 
-COPY ./api/requirements.txt .
+COPY ./core/requirements.txt .
 
 RUN apk update \
     && apk add gcc g++ \
@@ -10,5 +10,5 @@ RUN apk update \
 
 WORKDIR /usr/app
 
-COPY ./api/ .
+COPY ./core/ .
 CMD ["python", "main.py"]

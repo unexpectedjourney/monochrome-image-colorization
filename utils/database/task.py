@@ -1,22 +1,20 @@
 from datetime import datetime
 
-from motor import MotorClient
+from .connector import database
 
-
-async def _tasks_collection():
-    return (await MotorClient.get_database()).tasks
+_tasks_collection = database.task
 
 
 async def get_all_tasks():
-    return (await _tasks_collection()).find()
+    return await _tasks_collection.find()
 
 
 async def get_one_task(task_id):
-    return (await _tasks_collection()).find({"task_id": task_id})
+    return await _tasks_collection.find({"task_id": task_id})
 
 
 async def insert_task(task_id):
-    return (await _tasks_collection()).insert(
+    return await _tasks_collection.insert(
         {
             "task_id": task_id,
             "timestamp": datetime.now().isoformat(),
@@ -26,7 +24,7 @@ async def insert_task(task_id):
 
 
 async def complete_task(task_id):
-    return (await _tasks_collection()).update(
+    return await _tasks_collection.update(
         {"task_id": task_id},
         {
             "$set": {
