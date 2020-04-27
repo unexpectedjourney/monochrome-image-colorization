@@ -1,17 +1,57 @@
+from http import HTTPStatus
+
+from aiohttp import web
+
+from helpers.encryption import encrypt_password, generate_token
+from utils.database import user
+
+
 async def login(request):
-    router = request.app.router
-    form = await request.post()
+    """
+    ---
+    tags:
+    - Login
+    produces:
+    - application/json
+    parameters:
+    - in: body
+      name: body
+      description: Created user object
+      required: true
+      schema:
+        type: object
+        properties:
+          username:
+            type: "string"
+          password:
+            type: string
+    responses:
+        "200":
+            description: registered
+        "400":
+            description: wrong data
+        "405":
+            description: invalid HTTP Method
+    """
+    data = await request.json()
+    username = data.get("username")
+    password = data.get("password")
 
-    username, password = (form['name'], form['password'])
+    if not username or not password:
+        return web.Response(status=HTTPStatus.BAD_REQUEST)
 
-    pg = request.app.get('pg', None)
-    if pg is not None:
-        password = encrypt_password(password)
-        user_id = await get_user_id(pg, username, password)
-        if user_id is None:
-            return web.Response(text='No such user', status=HTTPStatus.FORBIDDEN)
-        user_id = dict(user_id)
-        session = await new_session(request)
-        session['user_id'] = user_id.get('id', None)
-        return web.HTTPFound(router['index'].url_for())
-    return web.Response(text='Server error', status=HTTPStatus.BAD_GATEWAY)
+    hashed_password = encrypt_password(password)
+    user_data = await user.get_user(username)
+    if user_data is None:
+        return web.Response(status=HTTPStatus.BAD_REQUEST)
+
+    original_hashed_password = user_data.get("password")
+
+    if original_hashed_password != hashed_password:
+        return web.Response(text="Wrong password", status=HTTPStatus.BAD_REQUEST)
+
+    user_id = str(user_data.get("_id"))
+    jwt_token = generate_token(user_id)
+    return web.json_response({
+        "token": jwt_token
+    }, status=HTTPStatus.ACCEPTED)
