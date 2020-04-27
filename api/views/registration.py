@@ -2,7 +2,7 @@ from http import HTTPStatus
 
 from aiohttp import web
 
-from helpers.encryption import encrypt_password
+from helpers.encryption import encrypt_password, generate_token
 from utils.database import user
 from utils.logger import setup_logger
 
@@ -42,12 +42,10 @@ async def register(request):
             "405":
                 description: invalid HTTP Method
     """
-    data = await request.post()
-
+    data = await request.json()
     username = data.get("username")
     password1 = data.get("password1")
     password2 = data.get("password2")
-
     if not username or not password1 or not password2:
         return web.Response(status=HTTPStatus.BAD_REQUEST)
 
@@ -55,6 +53,16 @@ async def register(request):
         return web.Response(
             text="Passwords should be similar", status=HTTPStatus.BAD_REQUEST)
 
-    data = user.insert_user_if_not_exist(username, encrypt_password(password1))
-    log.info(data)
-    return web.json_response(status=HTTPStatus.CREATED)
+    user_data = await user.get_user(username)
+    if user_data is not None:
+        return web.Response(
+            text="User already exists", status=HTTPStatus.BAD_REQUEST)
+
+    await user.insert_user_if_not_exist(username, encrypt_password(password1))
+    user_data = await user.get_user(username)
+    log.info(user_data)
+    user_id = str(user_data.get('_id'))
+    jwt_token = generate_token(user_id)
+    return web.json_response({
+        "token": jwt_token
+    }, status=HTTPStatus.CREATED)
