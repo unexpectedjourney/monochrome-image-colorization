@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from motor import MotorClient
+from .connector import client
 
 
 async def _tasks_collection():
-    return (await MotorClient.get_database()).tasks
+    return (await client.get_database()).tasks
 
 
 async def get_all_tasks():
