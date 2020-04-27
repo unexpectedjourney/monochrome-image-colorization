@@ -1,13 +1,16 @@
 import asyncio
+import base64
 
 import aiohttp_cors
 from aiohttp import web
+from aiohttp_session import setup
+from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from aiohttp_swagger import setup_swagger
+from cryptography import fernet
 from message_handler import rabbitmq_message_handler
-
+from middlewares.login import auth_middleware
 from urls import get_routers
 
-from middlewares.login import auth_middleware
 from utils.constants import RESPONSE_QUEUE
 from utils.logger import setup_logger
 from utils.rabbitmq.connector import RabbitMQConnection
@@ -20,6 +23,10 @@ async def main():
     app = web.Application(
         client_max_size=2 ** 50, middlewares=[auth_middleware])
     get_routers(app)
+
+    fernet_key = fernet.Fernet.generate_key()
+    secret_key = base64.urlsafe_b64decode(fernet_key)
+    setup(app, EncryptedCookieStorage(secret_key))
 
     setup_swagger(app)
 
