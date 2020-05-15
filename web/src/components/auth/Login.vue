@@ -3,8 +3,8 @@
         <h2 class="login-heading">{{getLang.login}}</h2>
         <form action="#" @submit.prevent="login">
             <div class="form-label-group">
-                <input type="email" id="inputEmail" class="form-control" :placeholder="[[ getLang.username ]]" v-model="username" required autofocus>
-                <label for="inputEmail">{{getLang.username}}</label>
+                <input type="text" id="inputUsername" class="form-control" :placeholder="[[ getLang.username ]]" v-model="username" required autofocus>
+                <label for="inputUsername">{{getLang.username}}</label>
             </div>
 
             <div class="form-label-group">
@@ -38,7 +38,7 @@
         },
         methods: {
             async login() {
-                const response = await axios.post('/auth/login/', {
+                const response = await axios.post('/login/', {
                     username: this.username,
                     password: this.password,
                 });

@@ -4,7 +4,7 @@
         <form action="#" @submit.prevent="register" method="post">
 
             <div class="form-label-group">
-                <input type="email" id="inputUsername" class="form-control" :placeholder="[[ getLang.username ]]" v-model="username" required autofocus>
+                <input type="text" id="inputUsername" class="form-control" :placeholder="[[ getLang.username ]]" v-model="username" required autofocus>
                 <label for="inputUsername">{{getLang.username}}</label>
             </div>
 
@@ -14,13 +14,13 @@
             </div>
 
             <div class="form-label-group">
-                <input type="email" id="inputPassword1" class="form-control" :placeholder="[[ getLang.password ]]" v-model="password1" required>
+                <input type="password" id="inputPassword1" class="form-control" :placeholder="[[ getLang.password ]]" v-model="password1" required>
                 <label for="inputPassword1">{{getLang.password}}</label>
             </div>
 
 
             <div class="form-label-group">
-                <input type="email" id="inputPassword2" class="form-control" :placeholder="[[ getLang.password ]]" v-model="password2" required>
+                <input type="password" id="inputPassword2" class="form-control" :placeholder="[[ getLang.password ]]" v-model="password2" required>
                 <label for="inputPassword2">{{getLang.password}}</label>
             </div>
 
@@ -55,7 +55,7 @@
         methods: {
             register() {
                 accessToken.removeToken();
-                const response = axios.post('/auth/register/', {
+                const response = axios.post('/register/', {
                     username: this.username,
                     email: this.email,
                     password1: this.password1,

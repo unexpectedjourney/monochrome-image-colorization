@@ -8,13 +8,12 @@ import {loginTest} from "./helpers/login-test";
 
 window.eventBus = new Vue();
 Vue.config.productionTip = false;
-axios.defaults.baseURL = 'http://0.0.0.0:8000/api';
+axios.defaults.baseURL = 'http://localhost:8080';
 
 axios.interceptors.request.use(config => {
   if (accessToken.getToken()) {
     config.headers['Authorization'] = 'Bearer ' + accessToken.getToken();
   }
-
   return config;
 }, error => {
   return Promise.reject(error);
