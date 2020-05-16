@@ -3,7 +3,6 @@ from http import HTTPStatus
 
 from aiohttp import web
 
-from decorators.login import is_authorized
 from utils.constants import REQUEST_QUEUE
 from utils.events import RabbitMQEvents
 from utils.files import handle_file_upload
@@ -13,7 +12,6 @@ from utils.rabbitmq.message import RabbitMQMessage
 log = setup_logger(__name__)
 
 
-@is_authorized
 async def colorize(request):
     """
         ---
