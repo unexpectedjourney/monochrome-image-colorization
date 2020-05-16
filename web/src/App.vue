@@ -59,6 +59,10 @@
       await loginTest();
       this.loggedIn = !!accessToken.getToken();
     },
+    async updated() {
+      await loginTest();
+      this.loggedIn = !!accessToken.getToken();
+    },
     computed: {
       getLang() {
         if (this.$store.getters.getLocalization) {
