@@ -14,9 +14,8 @@ def trim_filename(filename):
     return filename
 
 
-async def handle_file_upload(request):
-    reader = await request.multipart()
-    field = await reader.next()
+async def save_file(field):
+    log.info(field.filename)
     filename = os.path.join(
         UPLOAD_PATH,
         '{}.{}'.format(str(uuid.uuid4()), trim_filename(field.filename)))
@@ -31,3 +30,14 @@ async def handle_file_upload(request):
             size += len(chunk)
             f.write(chunk)
     return filename
+
+
+async def handle_file_upload(request):
+    original_filename, painted_filename = None, None
+    async for field in (await request.multipart()):
+        if field.name == "originalImage":
+            original_filename = await save_file(field)
+        elif field.name == "paintedImage":
+            painted_filename = await save_file(field)
+
+    return original_filename, painted_filename

@@ -4,6 +4,7 @@ import Home from '../views/Home.vue'
 import Login from '../components/auth/Login.vue'
 import Registration from '../components/auth/Registration.vue'
 import Logout from '../components/auth/Logout.vue'
+import ImageEditor from '../components/ImageEditor.vue'
 
 Vue.use(VueRouter)
 
@@ -40,9 +41,14 @@ const routes = [
       component: Logout
     },
     {
-        path: '/upload',
-        name: 'ImageUpload',
-        component: () => import(/* webpackChunkName: "about" */ '../views/ImageUpload.vue')
+      path: '/upload',
+      name: 'ImageUpload',
+      component: () => import(/* webpackChunkName: "about" */ '../views/ImageUpload.vue')
+    },
+    {
+      path: '/editor',
+      name: 'ImageEditor',
+      component: ImageEditor
     }
 ]
 

@@ -2,7 +2,6 @@ import uuid
 from http import HTTPStatus
 
 from aiohttp import web
-
 from utils.constants import REQUEST_QUEUE
 from utils.events import RabbitMQEvents
 from utils.files import handle_file_upload
@@ -40,11 +39,12 @@ async def colorize(request):
     task_id = uuid.uuid4().hex
     rabbitmq = request.app['rabbitmq']
 
-    filename = await handle_file_upload(request)
+    original_filename, painted_filename = await handle_file_upload(request)
 
     message = RabbitMQMessage(
         "api", RabbitMQEvents.REQUEST_COLORIZATION.value, {
-            "filename": filename
+            "original_filename": original_filename,
+            "painted_filename": painted_filename
         }
     )
     await rabbitmq.publish(queue=REQUEST_QUEUE, body=message.to_json())
