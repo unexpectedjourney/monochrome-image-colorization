@@ -177,11 +177,15 @@ def colorize(original_filepath, marked_filepath, output_filepath):
 
 async def colorize_file(params):
     log.info("Colorization has started")
-    filename = params.get("filename")
-    if not filename:
+    original_filename = params.get("original_filename")
+    if not original_filename:
+        return
+
+    painted_filename = params.get("painted_filename")
+    if not painted_filename:
         return
 
     # part for image colorization
     # todo should pass new filename
     log.info("Colorization has finished")
-    return filename
+    return original_filename

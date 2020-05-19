@@ -10,7 +10,6 @@ export const loginTest = async () => {
                 throw new Error("Error")
             }
         } catch (e) {
-            console.log("eqw");
             accessToken.removeToken();
         }
     }
