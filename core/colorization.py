@@ -1,3 +1,6 @@
+import asyncio
+from datetime import datetime
+
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
@@ -5,6 +8,7 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import lsqr
 from skimage.color import rgb2yiq, yiq2rgb
 
+from utils.files import generate_filename
 from utils.logger import setup_logger
 
 log = setup_logger(__name__)
@@ -79,6 +83,8 @@ def _colorize(image, marks):
     col_indices = np.zeros((full_length, 1))
     values = np.zeros((full_length, 1))
 
+    log.info("Neighbors computation has started")
+    start_point = datetime.now()
     for col in range(width):
         for row in range(height):
             global_values = np.zeros((1, window_size))
@@ -126,6 +132,13 @@ def _colorize(image, marks):
             pixel_index += 1
             absolute_index += 1
 
+    log.info(
+        f"Neighbors computation has finished. "
+        f"Time: {datetime.now() - start_point}"
+    )
+
+    log.info("Sparse matrix computation has started")
+    start_point = datetime.now()
     values = values[0: absolute_index].T[0]
     col_indices = col_indices[0: absolute_index].T[0]
     row_indices = row_indices[0: absolute_index].T[0]
@@ -133,22 +146,62 @@ def _colorize(image, marks):
     marked_indices = np.nonzero(marks)
     sparse_matrix = csr_matrix(
         (values, (row_indices, col_indices)), shape=(pixel_index, image_size))
+    log.info(
+        f"Sparse matrix computation has finished. "
+        f"Time: {datetime.now() - start_point}"
+    )
 
+    log.info("Image channels fill has started")
+    start_point = datetime.now()
     result = np.copy(image)
     for i in range(1, 3):
+        start_point = datetime.now()
+        log.info(f"{i}: current_slice...")
         current_slice = image[:, :, i]
-        b = np.zeros((height, width))
-        b[marked_indices] = current_slice[marked_indices]
-        b = b.reshape((sparse_matrix.shape[0]), order="F")
-        solution = lsqr(sparse_matrix, b)[0]
-        result[:, :, i] = solution.reshape((height, width), order="F")
+        log.info(f"{i}: current_slice: {datetime.now() - start_point}")
 
+        start_point = datetime.now()
+        log.info(f"{i}: np.zeros...")
+        b = np.zeros((height, width))
+        log.info(f"{i}: np.zeros: {datetime.now() - start_point}")
+
+        start_point = datetime.now()
+        log.info(f"{i}: b[marked_indices...")
+        b[marked_indices] = current_slice[marked_indices]
+        log.info(f"{i}: b[marked_indices: {datetime.now() - start_point}")
+
+        start_point = datetime.now()
+        log.info(f"{i}: b.reshape...")
+        b = b.reshape((sparse_matrix.shape[0]), order="F")
+        log.info(f"{i}: b.reshape: {datetime.now() - start_point}")
+
+        start_point = datetime.now()
+        log.info(f"{i}: lsqr...")
+        solution = lsqr(sparse_matrix, b)[0]
+        log.info(f"{i}: lsqr: {datetime.now() - start_point}")
+
+        start_point = datetime.now()
+        log.info(f"{i}: solution.reshape...")
+        result[:, :, i] = solution.reshape((height, width), order="F")
+        log.info(f"{i}: solution.reshape: {datetime.now() - start_point}")
+    log.info(
+        f"Image channels fill has finished. "
+        f"Time: {datetime.now() - start_point}"
+    )
     return result
 
 
 def colorize(original_filepath, marked_filepath, output_filepath):
+    log.info("Preprocess has started")
+    start_point = datetime.now()
     (output_image, marks) = preprocess(original_filepath, marked_filepath)
+    log.info(f"Preprocess has finished. Time: {datetime.now() - start_point}")
+
+    log.info("Colorization has started")
+    start_point = datetime.now()
     output_image = _colorize(output_image, marks)
+    log.info(
+        f"Colorization has finished. Time: {datetime.now() - start_point}")
 
     output_image = yiq2rgb(output_image)
     output_image = np.clip(output_image, 0, 1)
@@ -179,13 +232,24 @@ async def colorize_file(params):
     log.info("Colorization has started")
     original_filename = params.get("original_filename")
     if not original_filename:
+        log.error("No 'original_filename' in params")
         return
 
     painted_filename = params.get("painted_filename")
     if not painted_filename:
+        log.error("No 'painted_filename' in params")
         return
 
-    # part for image colorization
-    # todo should pass new filename
+    pure_filename = params.get("pure_filename")
+    if not painted_filename:
+        log.error("No 'painted_filename' in params")
+        return
+
+    colorized_filename = generate_filename(pure_filename)
+    log.info(colorized_filename)
+    loop = asyncio.get_event_loop()
+    await loop.run_in_executor(
+        None, colorize, original_filename, painted_filename,
+        colorized_filename)
     log.info("Colorization has finished")
     return original_filename

@@ -1,9 +1,9 @@
-FROM python:3.8.2-alpine3.11
+FROM python:3.8.2
 
 COPY ./core/requirements.txt .
 
-RUN apk update \
-    && apk add gcc g++ \
+RUN apt-get update \
+    && apt-get install gcc g++ \
     && pip install --upgrade pip==20.0.2 \
     && pip install --upgrade setuptools==46.0.0 \
     && pip install -r requirements.txt

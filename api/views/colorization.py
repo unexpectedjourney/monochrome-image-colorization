@@ -39,12 +39,15 @@ async def colorize(request):
     task_id = uuid.uuid4().hex
     rabbitmq = request.app['rabbitmq']
 
-    original_filename, painted_filename = await handle_file_upload(request)
+    (
+        original_filename, painted_filename, pure_filename
+    ) = await handle_file_upload(request)
 
     message = RabbitMQMessage(
         "api", RabbitMQEvents.REQUEST_COLORIZATION.value, {
             "original_filename": original_filename,
-            "painted_filename": painted_filename
+            "painted_filename": painted_filename,
+            "pure_filename": pure_filename
         }
     )
     await rabbitmq.publish(queue=REQUEST_QUEUE, body=message.to_json())
