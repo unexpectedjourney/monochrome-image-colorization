@@ -11,7 +11,7 @@
             <router-link class="nav-link" :to="{name: 'home'}">{{getLang.home}}<span class="sr-only">(current)</span></router-link>
           </li>
           <li class="nav-item" v-if="loggedIn">
-            <router-link class="nav-link" :to="{ name: 'ImageEditor' }">New Project</router-link>
+            <router-link class="nav-link" :to="{ name: 'image_editor' }">New Project</router-link>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">

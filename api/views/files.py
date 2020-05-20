@@ -2,11 +2,12 @@ import uuid
 from http import HTTPStatus
 
 from aiohttp import web
-
 from helpers.login import is_authorized
+
 from utils.constants import REQUEST_QUEUE
-from utils.database.file import insert_file
-from utils.database.file_version import insert_file_version
+from utils.database.file import insert_file, get_files_by_owner_id
+from utils.database.file_version import insert_file_version, \
+    get_file_versions_by_file_id
 from utils.events import RabbitMQEvents
 from utils.files import handle_file_upload, save_file
 from utils.logger import setup_logger
@@ -39,7 +40,7 @@ async def colorize(request):
       "405":
         description: invalid HTTP Method
     """
-    if await is_authorized(request):
+    if not await is_authorized(request):
         log.info("Authorization has failed")
         return web.json_response(status=HTTPStatus.OK)
 
@@ -99,7 +100,7 @@ async def save_file_version(request):
       "405":
         description: invalid HTTP Method
     """
-    if await is_authorized(request):
+    if not await is_authorized(request):
         log.info("Authorization has failed")
         return web.json_response(status=HTTPStatus.OK)
     filepath, file_id = None, None
@@ -110,3 +111,33 @@ async def save_file_version(request):
             file_id = (await field.read()).decode("utf-8")
     await insert_file_version(filepath=filepath, file_id=file_id)
     return web.json_response(status=HTTPStatus.CREATED)
+
+
+async def get_user_files(request):
+    """
+        ---
+        tags:
+        - Files get
+        responses:
+          "200":
+            description: Files were taken
+          "405":
+            description: invalid HTTP Method
+    """
+    if not await is_authorized(request):
+        log.info("Authorization has failed")
+        return web.json_response(status=HTTPStatus.OK)
+    log.info("Files preparation has started")
+    user = request.user
+    user_id = user.get("_id")
+    files = await get_files_by_owner_id(user_id)
+    for file in files:
+        file_id = file.get("_id")
+        file["_id"] = str(file_id)
+        file_versions = await get_file_versions_by_file_id(file_id=file_id)
+        if not file_versions:
+            continue
+        file_version = file_versions[0]
+        file["filepath"] = file_version.get("filepath")
+    log.info("Files preparation has finished")
+    return web.json_response(files, status=HTTPStatus.OK)
