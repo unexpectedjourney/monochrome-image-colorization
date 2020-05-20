@@ -113,7 +113,7 @@ export default {
   },
   props: {
     canvasWidth: {
-      default: 600,
+      default: 300,
     },
     event: {
       type: Function,
@@ -126,7 +126,7 @@ export default {
       type: String,
     },
     canvasHeight: {
-      default: 600,
+      default: 300,
     },
   },
   mounted() {

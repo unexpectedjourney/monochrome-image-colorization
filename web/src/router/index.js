@@ -20,35 +20,38 @@ const routes = [
         component: () => import(/* webpackChunkName: "about" */ '../views/About.vue')
     },
     {
-      path: '/login',
-      name: 'login',
-      component: Login,
-      meta: {
-        requiresVisitor: true,
-      }
+        path: '/login',
+        name: 'login',
+        component: Login,
+        meta: {
+            requiresVisitor: true,
+        }
     },
     {
-      path: '/register',
-      name: 'register',
-      component: Registration,
-      meta: {
-        requiresVisitor: true,
-      }
+        path: '/register',
+        name: 'register',
+        component: Registration,
+        meta: {
+            requiresVisitor: true,
+        }
     },
     {
-      path: '/logout',
-      name: 'logout',
-      component: Logout
+        path: '/logout',
+        name: 'logout',
+        component: Logout
     },
     {
-      path: '/upload',
-      name: 'ImageUpload',
-      component: () => import(/* webpackChunkName: "about" */ '../views/ImageUpload.vue')
+        path: '/upload',
+        name: 'ImageUpload',
+        component: () => import(/* webpackChunkName: "about" */ '../views/ImageUpload.vue')
     },
     {
-      path: '/editor',
-      name: 'ImageEditor',
-      component: ImageEditor
+        path: '/editor',
+        name: 'ImageEditor',
+        component: ImageEditor,
+        meta: {
+            requiresAuth: true,
+        }
     }
 ]
 

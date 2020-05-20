@@ -1,6 +1,6 @@
 from aiohttp import web
 from views.auth_check import check_authorization
-from views.colorization import colorize
+from views.files import (colorize, save_file_version)
 from views.health import status
 from views.login import login
 from views.registration import register
@@ -10,6 +10,7 @@ def get_urls():
     return [
         web.get("/api/health/", status, name="status"),
         web.post("/api/colorize_file/", colorize, name="colorize"),
+        web.post("/api/save_file/", save_file_version, name="save_file"),
         web.get("/api/check_authorization/", check_authorization,
                 name="check_authorization"),
         web.post("/login/", login, name="login"),

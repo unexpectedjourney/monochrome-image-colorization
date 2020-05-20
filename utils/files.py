@@ -14,11 +14,17 @@ def trim_filename(filename):
     return filename
 
 
+def generate_filename(filename):
+    return os.path.join(
+        UPLOAD_PATH,
+        '{}.{}'.format(str(uuid.uuid4()), trim_filename(filename))
+    )
+
+
 async def save_file(field):
     log.info(field.filename)
-    filename = os.path.join(
-        UPLOAD_PATH,
-        '{}.{}'.format(str(uuid.uuid4()), trim_filename(field.filename)))
+    pure_filename = field.filename
+    filename = generate_filename(pure_filename)
 
     log.debug('Trying to write file')
     size = 0
@@ -29,15 +35,15 @@ async def save_file(field):
                 break
             size += len(chunk)
             f.write(chunk)
-    return filename
+    return filename, pure_filename
 
 
 async def handle_file_upload(request):
-    original_filename, painted_filename = None, None
+    original_filename, painted_filename, pure_filename = None, None, None
     async for field in (await request.multipart()):
         if field.name == "originalImage":
-            original_filename = await save_file(field)
+            original_filename, pure_filename = await save_file(field)
         elif field.name == "paintedImage":
-            painted_filename = await save_file(field)
+            painted_filename, pure_filename = await save_file(field)
 
-    return original_filename, painted_filename
+    return original_filename, painted_filename, pure_filename
