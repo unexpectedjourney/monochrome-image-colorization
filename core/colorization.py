@@ -8,6 +8,7 @@ from scipy.sparse import csr_matrix
 from scipy.sparse.linalg import lsqr
 from skimage.color import rgb2yiq, yiq2rgb
 
+from utils.database.file_version import insert_file_version
 from utils.files import generate_filename
 from utils.logger import setup_logger
 
@@ -245,11 +246,17 @@ async def colorize_file(params):
         log.error("No 'painted_filename' in params")
         return
 
+    file_id = params.get("file_id")
+    if not file_id:
+        log.error("No 'file_id' in params")
+        return
+
     colorized_filename = generate_filename(pure_filename)
     log.info(colorized_filename)
     loop = asyncio.get_event_loop()
     await loop.run_in_executor(
         None, colorize, original_filename, painted_filename,
         colorized_filename)
+    await insert_file_version(filepath=colorized_filename, file_id=file_id)
     log.info("Colorization has finished")
     return original_filename
