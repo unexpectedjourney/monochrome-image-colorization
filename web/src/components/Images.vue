@@ -3,30 +3,32 @@
         <h2 class="text-center">Your Projects</h2>
         <br>
         <div class="row">
-            <ImageBlock/>
+            <ImageBlock v-for="image in images" v-bind:key="image._id" v-bind:image="image" />
         </div>
     </div>
 </template>
 
 <script>
     import axios from "axios";
+    import ImageBlock from "./ImageBlock"
 
     export default {
         name: "Images",
+        components: {
+            ImageBlock
+        },
         data() {
             return {
                 images: []
             };
         },
         async created() {
-            await this.getImages()
+            this.images = await this.getImages()
         },
         methods: {
             async getImages() {
-                // this.images = await axios.post("/")
                 const response = await axios.get("/api/images/");
-                console.log(response.status);
-                return []
+                return response.data || []
             }
         }
     }
