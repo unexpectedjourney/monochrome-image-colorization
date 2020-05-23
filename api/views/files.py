@@ -6,9 +6,11 @@ from bson import ObjectId
 from helpers.login import is_authorized
 
 from utils.constants import REQUEST_QUEUE
+from utils.database.convertor import simplify_objects
 from utils.database.file import insert_file, get_files_by_owner_id, get_file
 from utils.database.file_version import insert_file_version, \
     get_file_versions_by_file_id
+from utils.database.note import get_notes_by_file_id
 from utils.events import RabbitMQEvents
 from utils.files import handle_file_upload, save_file
 from utils.logger import setup_logger
@@ -47,7 +49,7 @@ async def colorize(request):
     """
     if not await is_authorized(request):
         log.info("Authorization has failed")
-        return web.json_response(status=HTTPStatus.OK)
+        return web.json_response(status=HTTPStatus.UNAUTHORIZED)
 
     log.info("Colorization function has started")
     task_id = uuid.uuid4().hex
@@ -107,7 +109,7 @@ async def save_file_version(request):
     """
     if not await is_authorized(request):
         log.info("Authorization has failed")
-        return web.json_response(status=HTTPStatus.OK)
+        return web.json_response(status=HTTPStatus.UNAUTHORIZED)
     filepath, file_id = None, None
     async for field in (await request.multipart()):
         if field.name == "file":
@@ -131,7 +133,7 @@ async def get_user_files(request):
     """
     if not await is_authorized(request):
         log.info("Authorization has failed")
-        return web.json_response(status=HTTPStatus.OK)
+        return web.json_response(status=HTTPStatus.UNAUTHORIZED)
     log.info("Files preparation has started")
     user = request.user
     user_id = user.get("_id")
@@ -161,7 +163,7 @@ async def get_user_file(request):
     """
     if not await is_authorized(request):
         log.info("Authorization has failed")
-        return web.json_response(status=HTTPStatus.OK)
+        return web.json_response(status=HTTPStatus.UNAUTHORIZED)
     log.info("One file preparation has started")
 
     file_id = request.match_info.get('image_id')
@@ -180,5 +182,9 @@ async def get_user_file(request):
     if file_versions:
         file_version = file_versions[0]
         file["filepath"] = file_version.get("filepath")
+
+    notes = await get_notes_by_file_id(file_id)
+    file["notes"] = [simplify_objects(el) for el in notes]
+    log.info(file)
     log.info("One file preparation has finished")
     return web.json_response(file, status=HTTPStatus.OK)
