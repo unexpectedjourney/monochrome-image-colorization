@@ -39,11 +39,16 @@ async def save_file(field):
 
 
 async def handle_file_upload(request):
-    original_filename, painted_filename, pure_filename = None, None, None
+    (
+        original_filename, painted_filename, pure_filename, image_title
+    ) = None, None, None, None
+
     async for field in (await request.multipart()):
         if field.name == "originalImage":
             original_filename, pure_filename = await save_file(field)
         elif field.name == "paintedImage":
             painted_filename, pure_filename = await save_file(field)
+        elif field.name == "projectTitle":
+            image_title = (await field.read()).decode("utf-8")
 
-    return original_filename, painted_filename, pure_filename
+    return original_filename, painted_filename, pure_filename, image_title

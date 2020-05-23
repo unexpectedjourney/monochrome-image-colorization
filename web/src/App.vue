@@ -25,7 +25,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <router-link class="dropdown-item" to="/profile">Your Profile</router-link>
-              <router-link class="dropdown-item" to="/profile">Your Projects</router-link>
+              <router-link class="dropdown-item" :to="{ name: 'images' }">Your Projects</router-link>
               <router-link class="dropdown-item" to="/warnings">Your History</router-link>
               <div class="dropdown-divider"></div>
               <router-link class="dropdown-item" :to="{ name: 'logout' }">{{getLang.logout}}</router-link>
