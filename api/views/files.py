@@ -177,14 +177,38 @@ async def get_user_file(request):
         return web.json_response(status=HTTPStatus.Forbidden)
 
     file["_id"] = file_id
-    file_versions = await get_file_versions_by_file_id(file_id=ObjectId(file_id))
+    file_versions = await get_file_versions_by_file_id(
+        file_id=ObjectId(file_id))
 
     if file_versions:
         file_version = file_versions[0]
         file["filepath"] = file_version.get("filepath")
 
     notes = await get_notes_by_file_id(file_id)
-    file["notes"] = [simplify_objects(el) for el in notes]
-    log.info(file)
+    file["notes"] = [simplify_objects(el, ("_id", "file_id")) for el in notes]
     log.info("One file preparation has finished")
+    return web.json_response(file, status=HTTPStatus.OK)
+
+
+async def get_file_versions(request):
+    if not await is_authorized(request):
+        log.info("Authorization has failed")
+        return web.json_response(status=HTTPStatus.UNAUTHORIZED)
+    log.info("Preparation of file versions has started")
+    file_id = request.match_info.get('image_id')
+    file = await get_file(file_id)
+    if file is None:
+        return web.json_response(status=HTTPStatus.NOT_FOUND)
+    user = request.user
+    user_id = user.get("_id")
+    file_owner_id = file.get("owner_id")
+    if user_id != file_owner_id:
+        return web.json_response(status=HTTPStatus.Forbidden)
+
+    file["_id"] = file_id
+    file_versions = await get_file_versions_by_file_id(
+        file_id=ObjectId(file_id))
+    file["versions"] = [simplify_objects(el, ("_id", "file_id")) for el in file_versions]
+    log.info("Preparation of file versions has finished")
+    log.info(file)
     return web.json_response(file, status=HTTPStatus.OK)

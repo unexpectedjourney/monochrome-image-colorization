@@ -1,7 +1,8 @@
 from aiohttp import web
 from views.auth_check import check_authorization
 from views.files import (
-    colorize, save_file_version, get_user_files, get_user_file)
+    colorize, save_file_version, get_user_files, get_user_file,
+    get_file_versions)
 from views.health import status
 from views.login import login
 from views.registration import register
@@ -14,6 +15,8 @@ def get_urls():
 
         web.get("/api/images/", get_user_files, name="get_images"),
         web.get("/api/images/{image_id}", get_user_file, name="get_image"),
+        web.get("/api/images/{image_id}/versions", get_file_versions,
+                name="get_image_versions"),
         web.post("/api/colorize_file/", colorize, name="colorize"),
         web.post("/api/save_file/", save_file_version, name="save_file"),
 

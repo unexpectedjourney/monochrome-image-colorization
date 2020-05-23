@@ -1,7 +1,11 @@
 <template>
     <div class="container">
         <h3>{{ image.title || "Your project" }}</h3>
-        <img class="text-center" :src="getFilepath()" alt="">
+        <img class="text-center" :src="getFilepathWrapper()" alt="">
+        <ul class="list-unstyled list-inline media-detail pull-left">
+            <li class="list-inline-item"><router-link :to="{name: 'versions'}" type="button" class="btn btn-outline-info"><i class="fa fa-clone"></i> Image versions</router-link></li>
+            <li class="list-inline-item"><a type="button" :href="getFilepathWrapper()" class="btn btn-outline-success"><i class="fa fa-download"></i> Download</a></li>
+        </ul>
         <div class="row">
             <div class="col-sm-12">
                 <form class="form-group">
@@ -34,6 +38,7 @@
 <script>
     import axios from "axios";
     import NoteBlock from "./NoteBlock";
+    import filepath from "../helpers/filepath";
 
     export default {
         name: "ImageComponent",
@@ -50,11 +55,8 @@
             this.image = await this.getImage();
         },
         methods: {
-            getFilepath() {
-                if (!this.image.filepath) {
-                    return "https://i.pinimg.com/originals/10/b2/f6/10b2f6d95195994fca386842dae53bb2.png"
-                }
-                return "http://localhost/" + this.image.filepath
+            getFilepathWrapper() {
+                return filepath.getFilepath(this.image.filepath)
             },
             async getImage() {
                 const response = await axios.get(
