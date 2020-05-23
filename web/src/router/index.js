@@ -5,6 +5,8 @@ import Login from '../components/auth/Login.vue'
 import Registration from '../components/auth/Registration.vue'
 import Logout from '../components/auth/Logout.vue'
 import ImageEditor from '../components/ImageEditor.vue'
+import Images from '../components/Images.vue'
+import ImageComponent from "../components/ImageComponent";
 
 Vue.use(VueRouter)
 
@@ -47,8 +49,25 @@ const routes = [
     },
     {
         path: '/editor',
-        name: 'ImageEditor',
+        name: 'image_editor',
         component: ImageEditor,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    {
+        path: '/images',
+        name: 'images',
+        component: Images,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    {
+        path: '/images/:id',
+        name: 'image',
+        component: ImageComponent,
+        props: true,
         meta: {
             requiresAuth: true,
         }

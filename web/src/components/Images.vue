@@ -1,0 +1,50 @@
+<template>
+    <div class="container">
+        <h2 class="text-center">Your Projects</h2>
+        <br>
+        <div class="row">
+            <ImageBlock v-for="image in images" v-bind:key="image._id" v-bind:image="image" />
+        </div>
+    </div>
+</template>
+
+<script>
+    import axios from "axios";
+    import ImageBlock from "./ImageBlock"
+
+    export default {
+        name: "Images",
+        components: {
+            ImageBlock
+        },
+        data() {
+            return {
+                images: []
+            };
+        },
+        async created() {
+            this.images = await this.getImages()
+        },
+        methods: {
+            async getImages() {
+                const response = await axios.get("/api/images/");
+                return response.data || []
+            }
+        }
+    }
+</script>
+
+<style scoped>
+    body {
+        padding-top: 5rem;
+    }
+
+    .image-link:hover {
+        opacity: 88%;
+    }
+
+    .image-link-text {
+        color: #000;
+        opacity: 76%;
+    }
+</style>
