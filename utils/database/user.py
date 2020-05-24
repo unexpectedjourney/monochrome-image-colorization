@@ -23,7 +23,7 @@ async def get_user(_id=None, username=None):
 
 
 async def insert_user_if_not_exist(username, hashed_password, first_name="",
-                                   last_name=""):
+                                   last_name="", email=""):
     timestamp = datetime.now().isoformat()
     return await _users_collection.update_one(
         {
@@ -36,8 +36,26 @@ async def insert_user_if_not_exist(username, hashed_password, first_name="",
                 "created_at": timestamp,
                 "updated_at": timestamp,
                 "first_name": first_name,
-                "last_name": last_name
+                "last_name": last_name,
+                "email": email
             }
         },
         upsert=True
+    )
+
+
+async def update_user(username, first_name, last_name, email):
+    timestamp = datetime.now().isoformat()
+    return await _users_collection.update_one(
+        {
+            "username": username
+        },
+        {
+            "$set": {
+                "updated_at": timestamp,
+                "first_name": first_name,
+                "last_name": last_name,
+                "email": email
+            }
+        }
     )

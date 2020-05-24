@@ -8,6 +8,7 @@ import ImageEditor from '../components/ImageEditor.vue'
 import Images from '../components/Images.vue'
 import ImageComponent from "../components/ImageInfo";
 import Versions from "../components/versioning/Versions";
+import UserProfile from "../components/UserProfile";
 
 Vue.use(VueRouter)
 
@@ -71,7 +72,15 @@ const routes = [
         meta: {
             requiresAuth: true,
         }
-    }
+    },
+    {
+        path: '/user_profile',
+        name: 'user_profile',
+        component: UserProfile,
+        meta: {
+            requiresAuth: true,
+        }
+    },
 ]
 
 const router = new VueRouter({

@@ -13,7 +13,7 @@ def object_id2str(id_):
     return str(id_)
 
 
-def simplify_objects(obj, fields=("id",)):
+def simplify_objects(obj, fields=("_id",)):
     for field in fields:
         id_ = obj.get(field)
         if id_ is None:
