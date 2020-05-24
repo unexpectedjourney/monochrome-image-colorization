@@ -13,9 +13,10 @@ def object_id2str(id_):
     return str(id_)
 
 
-def simplify_objects(obj):
-    id_ = obj.get("_id")
-    if id_ is None:
-        return obj
-    obj["_id"] = object_id2str(id_)
+def simplify_objects(obj, fields=("id",)):
+    for field in fields:
+        id_ = obj.get(field)
+        if id_ is None:
+            continue
+        obj[field] = object_id2str(id_)
     return obj

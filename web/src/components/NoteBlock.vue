@@ -4,7 +4,7 @@
             <h4 class="media-heading">Your note</h4>
             <p>{{note.text}}</p>
             <ul class="list-unstyled list-inline media-detail pull-left">
-                <li class=""><i class="fa fa-calendar"></i> {{getDate()}}</li>
+                <li class=""><i class="fa fa-calendar"></i> {{getDateWrapper()}}</li>
                 <li class=""><button v-on:click="removeNote(note._id)" type="button" class="btn btn-outline-danger"><i class="fa fa-trash"></i> Remove</button></li>
             </ul>
             <hr/>
@@ -13,16 +13,15 @@
 </template>
 
 <script>
+    import date from "../helpers/date";
+
     export default {
         name: "NoteBlock",
         props: ["note", "removeNote"],
         methods: {
-            getDate() {
-                if (this.created_at) {
-                    return this.created_at.split("T")[0];
-                }
-                return new Date().toISOString().split("T")[0]
-            }
+            getDateWrapper() {
+                return date.getDate(this.note.created_at)
+            },
         }
     }
 </script>
