@@ -40,6 +40,7 @@ async def main():
     })
     # Add all resources to `CorsConfig`.
     for route in list(app.router.routes()):
+        log.info(route)
         cors.add(route)
 
     rabbitmq = RabbitMQConnection()

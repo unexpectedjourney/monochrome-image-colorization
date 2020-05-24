@@ -7,6 +7,7 @@ from views.health import status
 from views.login import login
 from views.registration import register
 from views.notes import note
+from views.user import user_info
 
 
 def get_urls():
@@ -27,6 +28,9 @@ def get_urls():
                 name="check_authorization"),
         web.post("/login/", login, name="login"),
         web.post("/register/", register, name="register"),
+
+        web.get("/api/users/", user_info, name="get_user"),
+        web.put("/api/users/{user_id}", user_info, name="put_user"),
     ]
 
 

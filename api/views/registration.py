@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
 from aiohttp import web
-
 from helpers.encryption import encrypt_password, generate_token
+
 from utils.database import user
 from utils.logger import setup_logger
 
@@ -44,6 +44,7 @@ async def register(request):
     """
     data = await request.json()
     username = data.get("username")
+    email = data.get("email")
     password1 = data.get("password1")
     password2 = data.get("password2")
     if not username or not password1 or not password2:
@@ -58,7 +59,8 @@ async def register(request):
         return web.Response(
             text="User already exists", status=HTTPStatus.BAD_REQUEST)
 
-    await user.insert_user_if_not_exist(username, encrypt_password(password1))
+    await user.insert_user_if_not_exist(
+        username, encrypt_password(password1), email=email)
     user_data = await user.get_user(username=username)
     log.info(user_data)
     user_id = str(user_data.get('_id'))
