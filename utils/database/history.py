@@ -21,9 +21,9 @@ async def get_history_record(_id):
 
 
 async def get_history_records_by_owner_id(owner_id):
-    cursor = _history_collection.find({"owner_id": str2object_id(owner_id)}).sort(
+    cursor = _history_collection.find({"owner_id": owner_id}).sort(
         "created_at", pymongo.DESCENDING)
-    return [simplify_objects(d, ('_id', 'owner_id')) async for d in cursor]
+    return [d async for d in cursor]
 
 
 async def insert_history_record(owner_id, type_):

@@ -24,9 +24,9 @@
               {{getLang.user}}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <router-link class="dropdown-item" :to="{ name: 'user_profile'}">{{getLang.yourProfile}}</router-link>
+              <router-link class="dropdown-item" :to="{ name: 'user_profile' }">{{getLang.yourProfile}}</router-link>
               <router-link class="dropdown-item" :to="{ name: 'images' }">{{getLang.yourProjects}}</router-link>
-              <router-link class="dropdown-item" to="/user_history">{{getLang.yourHistory}}</router-link>
+              <router-link class="dropdown-item" :to="{ name: 'user_history' }">{{getLang.yourHistory}}</router-link>
               <div class="dropdown-divider"></div>
               <router-link class="dropdown-item" :to="{ name: 'logout' }">{{getLang.logout}}</router-link>
             </div>

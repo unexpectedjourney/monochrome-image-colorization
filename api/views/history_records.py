@@ -3,6 +3,7 @@ from http import HTTPStatus
 from aiohttp import web
 from helpers.login import is_authorized
 
+from utils.database.convertor import simplify_objects
 from utils.database.history import get_history_records_by_owner_id
 from utils.logger import setup_logger
 
@@ -17,5 +18,9 @@ async def get_history_records(request):
     user = request.user
     user_id = user.get("_id")
     history_records = await get_history_records_by_owner_id(owner_id=user_id)
+    log.info(history_records)
+    history_records = [
+        simplify_objects(el, ('_id', 'owner_id')) for el in history_records
+    ]
     log.info("History records preparation has finished")
     return web.json_response(history_records, status=HTTPStatus.OK)

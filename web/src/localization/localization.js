@@ -28,7 +28,16 @@ export const localization = {
     yourProject: "Ваш проект",
     projectTitle: "Назва проекту",
     version: "Версія",
-    password: "Пароль"
+    password: "Пароль",
+    colorizedFile: "колоризація файлу виконана в",
+    savedFile: "зберігання файлу виконана в",
+    loggedIn: "зайшли в",
+    signedUp: "зареєструвалися в",
+    updatedProfile: "оновили профіль в",
+    addedNote: "додали помітку в",
+    deletedNote: "видалили помітку в",
+    noData: "Немає даних",
+    you: "Ви"
   },
   en: {
     flag: true,
@@ -59,6 +68,15 @@ export const localization = {
     yourProject: "Your project",
     projectTitle: "Project title",
     version: "Version",
-    password: "Password"
+    password: "Password",
+    colorizedFile: "has colorized file at",
+    savedFile: "has saved file at",
+    loggedIn: "has logged in at",
+    signedUp: "has signed up at",
+    updatedProfile: "has updated profile at",
+    addedNote: "has added note at",
+    deletedNote: "has deleted note at",
+    noData: "No data",
+    you: "You"
   }
 };

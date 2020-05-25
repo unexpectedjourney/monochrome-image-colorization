@@ -33,7 +33,7 @@ def get_urls():
         web.get("/api/users/", user_info, name="get_user"),
         web.put("/api/users/{user_id}/", user_info, name="put_user"),
 
-        web.put(
+        web.get(
             "/api/history/", get_history_records, name="get_history_records"),
     ]
 
