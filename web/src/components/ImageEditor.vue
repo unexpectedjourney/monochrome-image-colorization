@@ -89,17 +89,17 @@
                         ref="editor"
                 />
             </div>
-            <div class="colors">
-                <ColorPicker :color="'#e40000'" :event="changeColor"/>
-                <ColorPicker :color="'#e8eb34'" :event="changeColor"/>
-                <ColorPicker :color="'#a834eb'" :event="changeColor"/>
-                <ColorPicker :color="'#65c31a'" :event="changeColor"/>
-                <ColorPicker :color="'#34b7eb'" :event="changeColor"/>
-                <ColorPicker :color="'#eb34df'" :event="changeColor"/>
-                <ColorPicker :color="'#1a10ad'" :event="changeColor"/>
-                <ColorPicker :color="'#000000'" :event="changeColor"/>
-            </div>
-
+<!--            <div class="colors">-->
+<!--                <ColorPicker :color="'#e40000'" :event="changeColor"/>-->
+<!--                <ColorPicker :color="'#e8eb34'" :event="changeColor"/>-->
+<!--                <ColorPicker :color="'#a834eb'" :event="changeColor"/>-->
+<!--                <ColorPicker :color="'#65c31a'" :event="changeColor"/>-->
+<!--                <ColorPicker :color="'#34b7eb'" :event="changeColor"/>-->
+<!--                <ColorPicker :color="'#eb34df'" :event="changeColor"/>-->
+<!--                <ColorPicker :color="'#1a10ad'" :event="changeColor"/>-->
+<!--                <ColorPicker :color="'#000000'" :event="changeColor"/>-->
+<!--            </div>-->
+                <Chrome :value="color" @input="changeColor"></Chrome>
         </div>
     </div>
 </template>
@@ -112,6 +112,8 @@
     import "@fortawesome/fontawesome-free/css/all.css";
     import "@fortawesome/fontawesome-free/js/all.js";
     import {localization} from "../localization/localization";
+    import { Chrome } from "vue-color"
+
 
     export default {
         name: "app",
@@ -119,6 +121,7 @@
             ColorPicker,
             Tool,
             Editor,
+            Chrome
         },
         data() {
             return {
@@ -181,7 +184,8 @@
                 this.currentActiveMethod = "";
                 this.$refs.editor.applyCropping();
             },
-            changeColor(colorHex) {
+            changeColor(color) {
+                const colorHex = color.hex;
                 this.color = colorHex;
                 this.$refs.editor.$data.color = colorHex;
                 this.setTool(this.currentActiveMethod);

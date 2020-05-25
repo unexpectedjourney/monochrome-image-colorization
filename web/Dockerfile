@@ -1,5 +1,5 @@
 # develop stage
-FROM node:12-alpine as develop-stage
+FROM node:12 as develop-stage
 WORKDIR /usr/app
 COPY web/package*.json ./
 RUN yarn global add @vue/cli \
