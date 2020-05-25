@@ -6,17 +6,26 @@
             <img class="rounded img-fluid"
                  :src="getFilepathWrapper()"
                  width="300" height="300">
-            <h3 class="text-center image-link-text">{{image.title || "Your project"}}</h3>
+            <h3 class="text-center image-link-text">{{image.title || getLang.yourProject}}</h3>
         </router-link>
     </div>
 </template>
 
 <script>
     import filepath from "../helpers/filepath";
+    import {localization} from "../localization/localization";
 
     export default {
-        name: "Image",
+        name: "ImageBlock",
         props: ['image'],
+        computed: {
+            getLang() {
+                if (this.$store.getters.getLocalization) {
+                    return localization.en;
+                }
+                return localization.ua;
+            },
+        },
         methods: {
             getFilepathWrapper() {
                 return filepath.getFilepath(this.image.filepath)

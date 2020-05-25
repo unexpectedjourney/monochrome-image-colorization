@@ -4,50 +4,54 @@
         <div v-if="isUpdating">
             <div class="form-label-group">
                 <input type="text" id="inputUsername"
-                       class="form-control text-center" placeholder="Username"
+                       class="form-control text-center"
+                       :placeholder="[[ getLang.username ]]"
                        v-model="user.username" disabled>
-                <label for="inputUsername">Username</label>
+                <label for="inputUsername">{{getLang.username}}</label>
             </div>
             <div class="form-label-group">
                 <input type="text" id="inputFirstname"
                        class="form-control text-center"
-                       placeholder="First name" v-model="user.first_name"
+                       :placeholder="[[ getLang.firstName ]]"
+                       v-model="user.first_name"
                        autofocus>
-                <label for="inputFirstname">First name</label>
+                <label for="inputFirstname">{{getLang.firstName}}</label>
             </div>
             <div class="form-label-group">
                 <input type="text" id="inputLastname"
-                       class="form-control text-center" placeholder="Last name"
+                       class="form-control text-center"
+                       :placeholder="[[ getLang.lastName ]]"
                        v-model="user.last_name">
-                <label for="inputUsername">Last name</label>
+                <label for="inputUsername">{{getLang.lastName}}</label>
             </div>
             <div class="form-label-group">
                 <input type="email" id="inputEmail"
-                       class="form-control text-center" placeholder="Email"
+                       class="form-control text-center"
+                       :placeholder="[[ getLang.email ]]"
                        v-model="user.email" required>
-                <label for="inputUsername">Email</label>
+                <label for="inputUsername">{{getLang.Email}}</label>
             </div>
             <div>
                 <button type="button" class="btn btn-success edit_button"
-                        v-on:click="updateUser()">Save
+                        v-on:click="updateUser()">{{getLang.save}}
                 </button>
                 <button type="button" class="btn btn-danger"
-                        v-on:click="isUpdating=false">Cancel
+                        v-on:click="isUpdating=false">{{getLang.cancel}}
                 </button>
             </div>
         </div>
         <div v-else>
-            <h3>Username</h3>
+            <h3>{{getLang.Username}}</h3>
             <h4>{{user.username || "--"}}</h4>
-            <h3>First name</h3>
+            <h3>{{getLang.firstName}}</h3>
             <h4>{{user.first_name || "--"}}</h4>
-            <h3>Last name</h3>
+            <h3>{{getLang.lastName}}</h3>
             <h4>{{user.last_name || "--"}}</h4>
-            <h3>Email</h3>
+            <h3>{{getLang.email}}</h3>
             <h4>{{user.email || "--"}}</h4>
             <div>
                 <button type="button" class="btn btn-success"
-                        v-on:click="isUpdating=true">Edit
+                        v-on:click="isUpdating=true">{{getLang.edit}}
                 </button>
             </div>
         </div>
@@ -56,6 +60,7 @@
 
 <script>
     import axios from "axios"
+    import {localization} from "../localization/localization";
 
     export default {
         name: "UserProfile",
@@ -71,6 +76,14 @@
         async created() {
             this.user = await this.getUserData();
         },
+        computed: {
+            getLang() {
+                if (this.$store.getters.getLocalization) {
+                    return localization.en;
+                }
+                return localization.ua;
+            },
+        },
         methods: {
             async getUserData() {
                 let response = await axios.get("/api/users/")
@@ -82,7 +95,7 @@
                     last_name: this.user.last_name,
                     email: this.user.email,
                 }
-                let response = await axios.put(`/api/users/${this.user._id}`, data, {
+                let response = await axios.put(`/api/users/${this.user._id}/`, data, {
                     headers: {
                         'Access-Control-Allow-Origin': '*',
                     }

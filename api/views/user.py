@@ -4,7 +4,9 @@ from aiohttp import web
 from helpers.login import is_authorized
 
 from utils.database.convertor import simplify_objects
+from utils.database.history import insert_history_record
 from utils.database.user import update_user, get_user
+from utils.history_types import HistoryTypes
 from utils.logger import setup_logger
 
 log = setup_logger(__name__)
@@ -32,8 +34,8 @@ async def user_info(request):
         await update_user(
             username=username, first_name=first_name, last_name=last_name,
             email=email)
+        await insert_history_record(user_id, HistoryTypes.USER_UPDATED.value)
         user = await get_user(username=username)
         user = simplify_objects(user)
-        log.info(user)
     log.info("User profile preparation has finished")
     return web.json_response(user, status=HTTPStatus.OK)

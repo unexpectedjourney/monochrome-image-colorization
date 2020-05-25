@@ -9,6 +9,7 @@ import Images from '../components/Images.vue'
 import ImageComponent from "../components/ImageInfo";
 import Versions from "../components/versioning/Versions";
 import UserProfile from "../components/UserProfile";
+import UserHistory from "../components/history/UserHistory";
 
 Vue.use(VueRouter)
 
@@ -77,6 +78,14 @@ const routes = [
         path: '/user_profile',
         name: 'user_profile',
         component: UserProfile,
+        meta: {
+            requiresAuth: true,
+        }
+    },
+    {
+        path: '/user_history',
+        name: 'user_history',
+        component: UserHistory,
         meta: {
             requiresAuth: true,
         }

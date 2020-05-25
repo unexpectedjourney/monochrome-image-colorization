@@ -4,6 +4,8 @@ from aiohttp import web
 from helpers.encryption import encrypt_password, generate_token
 
 from utils.database import user
+from utils.database.history import insert_history_record
+from utils.history_types import HistoryTypes
 from utils.logger import setup_logger
 
 log = setup_logger(__name__)
@@ -65,6 +67,7 @@ async def register(request):
     log.info(user_data)
     user_id = str(user_data.get('_id'))
     jwt_token = generate_token(user_id)
+    await insert_history_record(user_id, HistoryTypes.USER_SIGNED_UP.value)
     return web.json_response({
         "token": jwt_token
     }, status=HTTPStatus.CREATED)

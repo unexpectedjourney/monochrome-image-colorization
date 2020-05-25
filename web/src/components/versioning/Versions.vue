@@ -26,7 +26,7 @@
         methods: {
             async getImageVersions() {
                 const response = await axios.get(
-                    `/api/images/${this.$route.params.id}/versions`,
+                    `/api/images/${this.$route.params.id}/versions/`,
                     {
                         headers: {
                             'Access-Control-Allow-Origin': '*',
