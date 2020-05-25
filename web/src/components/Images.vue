@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <h2 class="text-center">Your Projects</h2>
+        <h2 class="text-center">{{getLang.yourProjects}}</h2>
         <br>
         <div class="row">
             <ImageBlock v-for="image in images" v-bind:key="image._id" v-bind:image="image" />
@@ -11,6 +11,7 @@
 <script>
     import axios from "axios";
     import ImageBlock from "./ImageBlock"
+    import {localization} from "../localization/localization";
 
     export default {
         name: "Images",
@@ -24,6 +25,14 @@
         },
         async created() {
             this.images = await this.getImages()
+        },
+        computed: {
+            getLang() {
+                if (this.$store.getters.getLocalization) {
+                    return localization.en;
+                }
+                return localization.ua;
+            },
         },
         methods: {
             async getImages() {

@@ -9,7 +9,7 @@ from utils.logger import setup_logger
 log = setup_logger(__name__)
 
 
-def get_history_records(request):
+async def get_history_records(request):
     if not await is_authorized(request):
         log.info("Authorization has failed")
         return web.json_response(status=HTTPStatus.UNAUTHORIZED)

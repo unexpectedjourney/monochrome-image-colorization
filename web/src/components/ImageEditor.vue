@@ -4,11 +4,11 @@
             <div class="editor-container">
                 <div class="row">
                     <div class="form-group text-centered mx-auto col-md-12">
-                        <label for="projectTitleData">Project
-                            title</label>
+                        <label for="projectTitleData">{{getLang.projectTitle}}</label>
                         <input type="text" class="form-control"
                                id="projectTitleData"
-                               placeholder="Project title" v-model="projectTitle">
+                               :placeholder="[[ getLang.projectTitle ]]"
+                               v-model="projectTitle">
                     </div>
                 </div>
                 <div class="editor">
@@ -111,6 +111,7 @@
     import ColorPicker from "./editor/ColorPicker";
     import "@fortawesome/fontawesome-free/css/all.css";
     import "@fortawesome/fontawesome-free/js/all.js";
+    import {localization} from "../localization/localization";
 
     export default {
         name: "app",
@@ -147,6 +148,14 @@
             },
             canvasHeight: {
                 default: 300,
+            },
+        },
+        computed: {
+            getLang() {
+                if (this.$store.getters.getLocalization) {
+                    return localization.en;
+                }
+                return localization.ua;
             },
         },
         mounted() {
