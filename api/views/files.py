@@ -10,9 +10,11 @@ from utils.database.convertor import simplify_objects
 from utils.database.file import insert_file, get_files_by_owner_id, get_file
 from utils.database.file_version import insert_file_version, \
     get_file_versions_by_file_id
+from utils.database.history import insert_history_record
 from utils.database.note import get_notes_by_file_id
 from utils.events import RabbitMQEvents
 from utils.files import handle_file_upload, save_file
+from utils.history_types import HistoryTypes
 from utils.logger import setup_logger
 from utils.rabbitmq.message import RabbitMQMessage
 
@@ -60,7 +62,6 @@ async def colorize(request):
     ) = await handle_file_upload(request)
 
     user = request.user
-    log.info(user)
     user_id = user.get("_id")
     file_result = await insert_file(owner_id=user_id, title=image_title)
     file_id = file_result.inserted_id
@@ -76,6 +77,8 @@ async def colorize(request):
         }
     )
     await rabbitmq.publish(queue=REQUEST_QUEUE, body=message.to_json())
+
+    await insert_history_record(user_id, HistoryTypes.FILE_COLORIZATION.value)
 
     log.info("Colorization function has finished")
     return web.json_response({
@@ -110,6 +113,8 @@ async def save_file_version(request):
     if not await is_authorized(request):
         log.info("Authorization has failed")
         return web.json_response(status=HTTPStatus.UNAUTHORIZED)
+    user = request.user
+    user_id = user.get("_id")
     filepath, file_id = None, None
     async for field in (await request.multipart()):
         if field.name == "file":
@@ -117,6 +122,7 @@ async def save_file_version(request):
         elif field.name == "file_id":
             file_id = (await field.read()).decode("utf-8")
     await insert_file_version(filepath=filepath, file_id=file_id)
+    await insert_history_record(user_id, HistoryTypes.FILE_SAVE.value)
     return web.json_response(status=HTTPStatus.CREATED)
 
 

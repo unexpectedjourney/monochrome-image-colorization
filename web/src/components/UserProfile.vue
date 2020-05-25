@@ -82,7 +82,7 @@
                     last_name: this.user.last_name,
                     email: this.user.email,
                 }
-                let response = await axios.put(`/api/users/${this.user._id}`, data, {
+                let response = await axios.put(`/api/users/${this.user._id}/`, data, {
                     headers: {
                         'Access-Control-Allow-Origin': '*',
                     }

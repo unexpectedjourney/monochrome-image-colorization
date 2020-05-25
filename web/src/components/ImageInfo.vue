@@ -60,7 +60,7 @@
             },
             async getImage() {
                 const response = await axios.get(
-                    `/api/images/${this.$route.params.id}`,
+                    `/api/images/${this.$route.params.id}/`,
                     {
                         headers: {
                             'Access-Control-Allow-Origin': '*',
@@ -88,7 +88,7 @@
                 this.image.notes = this.image.notes.filter(
                     note => note._id !== id
                 );
-                const response = await axios.delete(`/api/note/${id}`)
+                const response = await axios.delete(`/api/note/${id}/`)
             }
         }
     }
