@@ -29,7 +29,6 @@ router.beforeEach(async (to, from, next) => {
         name: 'login',
       })
     } else {
-      console.log(1);
       next()
     }
   } else if (to.matched.some(record => record.meta.requiresVisitor)) {
@@ -38,11 +37,9 @@ router.beforeEach(async (to, from, next) => {
         name: 'home',
       })
     } else {
-      console.log(2);
       next()
     }
   } else {
-    console.log(3);
     next();
   }
 });

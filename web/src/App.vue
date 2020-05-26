@@ -11,7 +11,7 @@
             <router-link class="nav-link" :to="{name: 'home'}">{{getLang.home}}<span class="sr-only">(current)</span></router-link>
           </li>
           <li class="nav-item" v-if="loggedIn">
-            <router-link class="nav-link" :to="{ name: 'ImageEditor' }">New Project</router-link>
+            <router-link class="nav-link" :to="{ name: 'image_editor' }">{{getLang.newProject}}</router-link>
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
@@ -24,9 +24,9 @@
               {{getLang.user}}
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <router-link class="dropdown-item" to="/profile">Your Profile</router-link>
-              <router-link class="dropdown-item" to="/profile">Your Projects</router-link>
-              <router-link class="dropdown-item" to="/warnings">Your History</router-link>
+              <router-link class="dropdown-item" :to="{ name: 'user_profile' }">{{getLang.yourProfile}}</router-link>
+              <router-link class="dropdown-item" :to="{ name: 'images' }">{{getLang.yourProjects}}</router-link>
+              <router-link class="dropdown-item" :to="{ name: 'user_history' }">{{getLang.yourHistory}}</router-link>
               <div class="dropdown-divider"></div>
               <router-link class="dropdown-item" :to="{ name: 'logout' }">{{getLang.logout}}</router-link>
             </div>

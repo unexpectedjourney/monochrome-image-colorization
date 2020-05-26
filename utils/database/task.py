@@ -16,7 +16,7 @@ async def get_one_task(task_id):
 
 async def insert_task(type, owner_id, file_version_id):
     timestamp = datetime.now().isoformat()
-    return await _tasks_collection.insert(
+    return await _tasks_collection.insert_one(
         {
             "type": type,
             "created_at": timestamp,
