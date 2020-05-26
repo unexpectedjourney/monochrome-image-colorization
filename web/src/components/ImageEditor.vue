@@ -31,12 +31,6 @@
                     />
 
                     <Tool
-                            :event="() => setTool('text')"
-                            :iconClass="'fas fa-font fa-lg'"
-                            :class="{ 'active-tool': currentActiveMethod === 'text' }"
-                    />
-
-                    <Tool
                             :event="() => setTool('circle')"
                             :iconClass="'far fa-circle fa-lg'"
                             :class="{ 'active-tool': currentActiveMethod === 'circle' }"
@@ -68,38 +62,31 @@
                     />
 
                     <Tool
-                            :event="() => cropImage()"
-                            :iconClass="'fas fa-crop-alt fa-lg'"
-                            v-show="!croppedImage"
-                    />
-
-                    <Tool
                             :event="e => uploadImage(e)"
                             :iconClass="'fas fa-file-upload fa-lg'"
                             :labelForUploadImage="true"
                     />
                     <Tool :event="() => saveImage()"
+                          :iconClass="'fas fa-download fa-lg'"/>
+                    <Tool v-if="!imageUrl"
+                          :key="imageUrl"
+                          :event="() => colorizeImage()"
+                          :iconClass="'fas fa-paint-roller fa-lg'"/>
+                    <Tool v-if="!!imageUrl"
+                          :key="imageUrl"
+                          :event="() => saveImageVersion()"
                           :iconClass="'fas fa-save fa-lg'"/>
-                    <Tool :event="() => colorizeImage()"
-                          :iconClass="'fas fa-paint-roller'"/>
                 </div>
-                <Editor
-                        :canvasWidth="canvasWidth"
-                        :canvasHeight="canvasHeight"
-                        ref="editor"
-                />
+                <div class="editor">
+                    <Editor class="editor-panel editor-canvas"
+                            :canvasWidth="canvasWidth"
+                            :canvasHeight="canvasHeight"
+                            ref="editor"
+                    />
+                    <Chrome class="editor-panel" :value="color"
+                            @input="changeColor"></Chrome>
+                </div>
             </div>
-            <div class="colors">
-                <ColorPicker :color="'#e40000'" :event="changeColor"/>
-                <ColorPicker :color="'#e8eb34'" :event="changeColor"/>
-                <ColorPicker :color="'#a834eb'" :event="changeColor"/>
-                <ColorPicker :color="'#65c31a'" :event="changeColor"/>
-                <ColorPicker :color="'#34b7eb'" :event="changeColor"/>
-                <ColorPicker :color="'#eb34df'" :event="changeColor"/>
-                <ColorPicker :color="'#1a10ad'" :event="changeColor"/>
-                <ColorPicker :color="'#000000'" :event="changeColor"/>
-            </div>
-
         </div>
     </div>
 </template>
@@ -112,6 +99,9 @@
     import "@fortawesome/fontawesome-free/css/all.css";
     import "@fortawesome/fontawesome-free/js/all.js";
     import {localization} from "../localization/localization";
+    import {Chrome} from "vue-color"
+    import filepath from "../helpers/filepath";
+
 
     export default {
         name: "app",
@@ -119,21 +109,26 @@
             ColorPicker,
             Tool,
             Editor,
+            Chrome
         },
         data() {
             return {
                 currentActiveMethod: null,
                 params: {},
+                imageData: {},
                 color: "black",
                 imageUrl: null,
                 croppedImage: false,
                 originalImage: null,
                 paintedImage: null,
-                projectTitle: null
+                projectTitle: ""
             };
         },
         props: {
             canvasWidth: {
+                default: 300,
+            },
+            canvasHeight: {
                 default: 300,
             },
             event: {
@@ -145,10 +140,7 @@
             },
             iconClass: {
                 type: String,
-            },
-            canvasHeight: {
-                default: 300,
-            },
+            }
         },
         computed: {
             getLang() {
@@ -158,7 +150,13 @@
                 return localization.ua;
             },
         },
-        mounted() {
+        async mounted() {
+            let fileId = this.$route.params.file_id;
+            if (!!fileId) {
+                this.imageData = await this.getImage(fileId);
+                this.projectTitle = this.imageData.title;
+                this.imageUrl = filepath.getFilepath(this.imageData.filepath);
+            }
             if (this.imageUrl) {
                 this.$refs.editor.setBackgroundImage(this.imageUrl);
                 this.croppedImage = this.$refs.editor.croppedImage;
@@ -181,7 +179,8 @@
                 this.currentActiveMethod = "";
                 this.$refs.editor.applyCropping();
             },
-            changeColor(colorHex) {
+            changeColor(color) {
+                const colorHex = color.hex;
                 this.color = colorHex;
                 this.$refs.editor.$data.color = colorHex;
                 this.setTool(this.currentActiveMethod);
@@ -196,11 +195,6 @@
                 link.setAttribute("download", "image-markup");
                 link.click();
             },
-            blobToFile(theBlob, fileName) {
-                theBlob.lastModifiedDate = new Date();
-                theBlob.name = fileName;
-                return theBlob;
-            },
             dataURItoFile(dataURI, filename) {
                 let byteString = null;
                 if (dataURI.split(',')[0].indexOf('base64') >= 0) {
@@ -209,8 +203,7 @@
                     byteString = unescape(dataURI.split(',')[1]);
                 }
                 let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-                console.log(mimeString);
-                // write the bytes of the string to a typed array
+
                 let ia = new Uint8Array(byteString.length);
                 for (let i = 0; i < byteString.length; ++i) {
                     ia[i] = byteString.charCodeAt(i);
@@ -235,7 +228,6 @@
                 const response = await axios.post("/api/colorize_file/", fd, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
-                console.log(response.status);
             },
             setTool(type, params) {
                 this.currentActiveMethod = type;
@@ -244,14 +236,36 @@
             sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
+            async getImage(file_id) {
+                const response = await axios.get(
+                    `/api/images/${file_id}/`,
+                    {
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    });
+                return response.data || {}
+            },
             async uploadImage(e) {
                 this.$refs.editor.uploadImage(e);
                 this.originalImage = e.target.files[0];
-                console.log(this.originalImage);
                 await this.sleep(2000);
                 let image = this.$refs.editor.saveImage();
                 this.originalImage = this.dataURItoFile(image, this.originalImage.name);
-                console.log(this.originalImage);
+                await this.$router.push({name: 'images'})
+            },
+            async saveImageVersion(e) {
+                let image = this.$refs.editor.saveImage();
+                let file = this.dataURItoFile(image, this.imageData.filename);
+                let fd = new FormData(document.forms[0]);
+
+                fd.append("file", file);
+                fd.append("fileId", this.$route.params.file_id);
+                fd.append("projectTitle", this.projectTitle);
+                const response = await axios.post("/api/save_file/", fd, {
+                    headers: {"Content-Type": "multipart/form-data"}
+                });
+                await this.$router.push({name: 'images'})
             },
             clear() {
                 this.currentActiveMethod = this.clear;
@@ -297,21 +311,12 @@
         min-height: 28px;
     }
 
-    .main .editor-container .editor .active-tool {
-        cursor: pointer;
-        color: #4287f5;
-    }
-
-    .main .colors {
-        display: flex;
-        flex-direction: column;
-        margin: 40px 25px 0 25px;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .custom-editor {
+    .editor-panel {
         margin-top: 20px;
+    }
+
+    .editor-canvas {
+        margin-right: 20px;
     }
 
     canvas {

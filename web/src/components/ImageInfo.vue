@@ -9,6 +9,14 @@
                         class="fa fa-clone"></i> {{getLang.imageVersions}}
                 </router-link>
             </li>
+            <li class="list-inline-item">
+                <router-link
+                        :to="{name: 'image_editor', params: {file_id: image._id}}"
+                        type="button"
+                        class="btn btn-outline-success"><i
+                        class="fa fa-download"></i> {{getLang.edit}}
+                </router-link>
+            </li>
             <li class="list-inline-item"><a type="button"
                                             :href="getFilepathWrapper()"
                                             class="btn btn-outline-success"><i
