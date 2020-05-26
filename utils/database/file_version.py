@@ -3,6 +3,7 @@ from datetime import datetime
 import pymongo
 
 from .connector import database
+from .convertor import str2object_id
 
 _file_versions_collection = database.file_versions
 
@@ -26,7 +27,7 @@ async def insert_file_version(filepath, file_id):
     return await _file_versions_collection.insert_one(
         {
             "filepath": filepath,
-            "file_id": file_id,
+            "file_id": str2object_id(file_id),
             "created_at": datetime.now().isoformat(),
         }
     )

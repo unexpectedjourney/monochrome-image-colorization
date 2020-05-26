@@ -7,7 +7,8 @@ from helpers.login import is_authorized
 
 from utils.constants import REQUEST_QUEUE
 from utils.database.convertor import simplify_objects
-from utils.database.file import insert_file, get_files_by_owner_id, get_file
+from utils.database.file import insert_file, get_files_by_owner_id, get_file, \
+    update_file
 from utils.database.file_version import insert_file_version, \
     get_file_versions_by_file_id
 from utils.database.history import insert_history_record
@@ -63,7 +64,8 @@ async def colorize(request):
 
     user = request.user
     user_id = user.get("_id")
-    file_result = await insert_file(owner_id=user_id, title=image_title)
+    file_result = await insert_file(
+        owner_id=user_id, title=image_title, filename=pure_filename)
     file_id = file_result.inserted_id
     await insert_file_version(filepath=original_filename, file_id=file_id)
     await insert_file_version(filepath=painted_filename, file_id=file_id)
@@ -99,7 +101,11 @@ async def save_file_version(request):
       type: file
       required: true
     - in: formData
-      name: file_id
+      name: fileId
+      type: string
+      required: true
+    - in: formData
+      name: projectTitle
       type: string
       required: true
     responses:
@@ -115,12 +121,15 @@ async def save_file_version(request):
         return web.json_response(status=HTTPStatus.UNAUTHORIZED)
     user = request.user
     user_id = user.get("_id")
-    filepath, file_id = None, None
+    filepath, file_id, title = None, None, None
     async for field in (await request.multipart()):
         if field.name == "file":
             filepath, pure_filename = await save_file(field)
-        elif field.name == "file_id":
+        elif field.name == "fileId":
             file_id = (await field.read()).decode("utf-8")
+        elif field.name == "projectTitle":
+            title = (await field.read()).decode("utf-8")
+    await update_file(file_id=file_id, title=title)
     await insert_file_version(filepath=filepath, file_id=file_id)
     await insert_history_record(user_id, HistoryTypes.FILE_SAVE.value)
     return web.json_response(status=HTTPStatus.CREATED)

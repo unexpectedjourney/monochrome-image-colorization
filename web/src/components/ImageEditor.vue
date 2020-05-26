@@ -80,8 +80,14 @@
                     />
                     <Tool :event="() => saveImage()"
                           :iconClass="'fas fa-save fa-lg'"/>
-                    <Tool :event="() => colorizeImage()"
+                    <Tool v-if="!imageUrl"
+                          :key="imageUrl"
+                          :event="() => colorizeImage()"
                           :iconClass="'fas fa-paint-roller'"/>
+                    <Tool v-if="!!imageUrl"
+                          :key="imageUrl"
+                          :event="() => saveImageVersion()"
+                          :iconClass="'fas fa-save'"/>
                 </div>
                 <div class="editor">
                     <Editor class="editor-panel editor-canvas"
@@ -89,7 +95,8 @@
                             :canvasHeight="canvasHeight"
                             ref="editor"
                     />
-                    <Chrome class="editor-panel" :value="color" @input="changeColor"></Chrome>
+                    <Chrome class="editor-panel" :value="color"
+                            @input="changeColor"></Chrome>
                 </div>
             </div>
         </div>
@@ -105,6 +112,7 @@
     import "@fortawesome/fontawesome-free/js/all.js";
     import {localization} from "../localization/localization";
     import {Chrome} from "vue-color"
+    import filepath from "../helpers/filepath";
 
 
     export default {
@@ -119,6 +127,7 @@
             return {
                 currentActiveMethod: null,
                 params: {},
+                imageData: {},
                 color: "black",
                 imageUrl: null,
                 croppedImage: false,
@@ -131,6 +140,9 @@
             canvasWidth: {
                 default: 300,
             },
+            canvasHeight: {
+                default: 300,
+            },
             event: {
                 type: Function,
             },
@@ -140,10 +152,7 @@
             },
             iconClass: {
                 type: String,
-            },
-            canvasHeight: {
-                default: 300,
-            },
+            }
         },
         computed: {
             getLang() {
@@ -153,7 +162,13 @@
                 return localization.ua;
             },
         },
-        mounted() {
+        async mounted() {
+            let fileId = this.$route.params.file_id;
+            if (!!fileId) {
+                this.imageData = await this.getImage(fileId);
+                this.projectTitle = this.imageData.title;
+                this.imageUrl = filepath.getFilepath(this.imageData.filepath);
+            }
             if (this.imageUrl) {
                 this.$refs.editor.setBackgroundImage(this.imageUrl);
                 this.croppedImage = this.$refs.editor.croppedImage;
@@ -192,11 +207,6 @@
                 link.setAttribute("download", "image-markup");
                 link.click();
             },
-            blobToFile(theBlob, fileName) {
-                theBlob.lastModifiedDate = new Date();
-                theBlob.name = fileName;
-                return theBlob;
-            },
             dataURItoFile(dataURI, filename) {
                 let byteString = null;
                 if (dataURI.split(',')[0].indexOf('base64') >= 0) {
@@ -205,8 +215,7 @@
                     byteString = unescape(dataURI.split(',')[1]);
                 }
                 let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-                console.log(mimeString);
-                // write the bytes of the string to a typed array
+
                 let ia = new Uint8Array(byteString.length);
                 for (let i = 0; i < byteString.length; ++i) {
                     ia[i] = byteString.charCodeAt(i);
@@ -240,6 +249,16 @@
             sleep(ms) {
                 return new Promise(resolve => setTimeout(resolve, ms));
             },
+            async getImage(file_id) {
+                const response = await axios.get(
+                    `/api/images/${file_id}/`,
+                    {
+                        headers: {
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    });
+                return response.data || {}
+            },
             async uploadImage(e) {
                 this.$refs.editor.uploadImage(e);
                 this.originalImage = e.target.files[0];
@@ -248,6 +267,19 @@
                 let image = this.$refs.editor.saveImage();
                 this.originalImage = this.dataURItoFile(image, this.originalImage.name);
                 console.log(this.originalImage);
+            },
+            async saveImageVersion(e) {
+                let image = this.$refs.editor.saveImage();
+                let file = this.dataURItoFile(image, this.imageData.filename);
+                let fd = new FormData(document.forms[0]);
+
+                fd.append("file", file);
+                fd.append("fileId", this.$route.params.file_id);
+                fd.append("projectTitle", this.projectTitle);
+                const response = await axios.post("/api/save_file/", fd, {
+                    headers: {"Content-Type": "multipart/form-data"}
+                });
+                console.log(response.status);
             },
             clear() {
                 this.currentActiveMethod = this.clear;
@@ -292,7 +324,7 @@
         min-width: 28px;
         min-height: 28px;
     }
-    
+
     .editor-panel {
         margin-top: 20px;
     }

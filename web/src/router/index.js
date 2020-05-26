@@ -41,9 +41,10 @@ const routes = [
         component: Logout
     },
     {
-        path: '/editor',
+        path: '/editor/:file_id?',
         name: 'image_editor',
         component: ImageEditor,
+        props: true,
         meta: {
             requiresAuth: true,
         }
