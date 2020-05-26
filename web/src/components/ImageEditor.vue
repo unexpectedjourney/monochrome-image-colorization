@@ -83,23 +83,15 @@
                     <Tool :event="() => colorizeImage()"
                           :iconClass="'fas fa-paint-roller'"/>
                 </div>
-                <Editor
-                        :canvasWidth="canvasWidth"
-                        :canvasHeight="canvasHeight"
-                        ref="editor"
-                />
+                <div class="editor">
+                    <Editor class="editor-panel editor-canvas"
+                            :canvasWidth="canvasWidth"
+                            :canvasHeight="canvasHeight"
+                            ref="editor"
+                    />
+                    <Chrome class="editor-panel" :value="color" @input="changeColor"></Chrome>
+                </div>
             </div>
-<!--            <div class="colors">-->
-<!--                <ColorPicker :color="'#e40000'" :event="changeColor"/>-->
-<!--                <ColorPicker :color="'#e8eb34'" :event="changeColor"/>-->
-<!--                <ColorPicker :color="'#a834eb'" :event="changeColor"/>-->
-<!--                <ColorPicker :color="'#65c31a'" :event="changeColor"/>-->
-<!--                <ColorPicker :color="'#34b7eb'" :event="changeColor"/>-->
-<!--                <ColorPicker :color="'#eb34df'" :event="changeColor"/>-->
-<!--                <ColorPicker :color="'#1a10ad'" :event="changeColor"/>-->
-<!--                <ColorPicker :color="'#000000'" :event="changeColor"/>-->
-<!--            </div>-->
-                <Chrome :value="color" @input="changeColor"></Chrome>
         </div>
     </div>
 </template>
@@ -112,7 +104,7 @@
     import "@fortawesome/fontawesome-free/css/all.css";
     import "@fortawesome/fontawesome-free/js/all.js";
     import {localization} from "../localization/localization";
-    import { Chrome } from "vue-color"
+    import {Chrome} from "vue-color"
 
 
     export default {
@@ -132,7 +124,7 @@
                 croppedImage: false,
                 originalImage: null,
                 paintedImage: null,
-                projectTitle: null
+                projectTitle: ""
             };
         },
         props: {
@@ -300,22 +292,13 @@
         min-width: 28px;
         min-height: 28px;
     }
-
-    .main .editor-container .editor .active-tool {
-        cursor: pointer;
-        color: #4287f5;
-    }
-
-    .main .colors {
-        display: flex;
-        flex-direction: column;
-        margin: 40px 25px 0 25px;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .custom-editor {
+    
+    .editor-panel {
         margin-top: 20px;
+    }
+
+    .editor-canvas {
+        margin-right: 20px;
     }
 
     canvas {
