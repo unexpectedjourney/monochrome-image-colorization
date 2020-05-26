@@ -31,12 +31,6 @@
                     />
 
                     <Tool
-                            :event="() => setTool('text')"
-                            :iconClass="'fas fa-font fa-lg'"
-                            :class="{ 'active-tool': currentActiveMethod === 'text' }"
-                    />
-
-                    <Tool
                             :event="() => setTool('circle')"
                             :iconClass="'far fa-circle fa-lg'"
                             :class="{ 'active-tool': currentActiveMethod === 'circle' }"
@@ -68,26 +62,20 @@
                     />
 
                     <Tool
-                            :event="() => cropImage()"
-                            :iconClass="'fas fa-crop-alt fa-lg'"
-                            v-show="!croppedImage"
-                    />
-
-                    <Tool
                             :event="e => uploadImage(e)"
                             :iconClass="'fas fa-file-upload fa-lg'"
                             :labelForUploadImage="true"
                     />
                     <Tool :event="() => saveImage()"
-                          :iconClass="'fas fa-save fa-lg'"/>
+                          :iconClass="'fas fa-download fa-lg'"/>
                     <Tool v-if="!imageUrl"
                           :key="imageUrl"
                           :event="() => colorizeImage()"
-                          :iconClass="'fas fa-paint-roller'"/>
+                          :iconClass="'fas fa-paint-roller fa-lg'"/>
                     <Tool v-if="!!imageUrl"
                           :key="imageUrl"
                           :event="() => saveImageVersion()"
-                          :iconClass="'fas fa-save'"/>
+                          :iconClass="'fas fa-save fa-lg'"/>
                 </div>
                 <div class="editor">
                     <Editor class="editor-panel editor-canvas"
@@ -240,7 +228,6 @@
                 const response = await axios.post("/api/colorize_file/", fd, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
-                console.log(response.status);
             },
             setTool(type, params) {
                 this.currentActiveMethod = type;
@@ -262,11 +249,10 @@
             async uploadImage(e) {
                 this.$refs.editor.uploadImage(e);
                 this.originalImage = e.target.files[0];
-                console.log(this.originalImage);
                 await this.sleep(2000);
                 let image = this.$refs.editor.saveImage();
                 this.originalImage = this.dataURItoFile(image, this.originalImage.name);
-                console.log(this.originalImage);
+                await this.$router.push({name: 'images'})
             },
             async saveImageVersion(e) {
                 let image = this.$refs.editor.saveImage();
@@ -279,7 +265,7 @@
                 const response = await axios.post("/api/save_file/", fd, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
-                console.log(response.status);
+                await this.$router.push({name: 'images'})
             },
             clear() {
                 this.currentActiveMethod = this.clear;
