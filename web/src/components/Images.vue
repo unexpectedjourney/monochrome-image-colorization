@@ -2,8 +2,11 @@
     <div class="container">
         <h2 class="text-center">{{getLang.yourProjects}}</h2>
         <br>
-        <div class="row">
+        <div v-if="images.length != 0" class="row">
             <ImageBlock v-for="image in images" v-bind:key="image._id" v-bind:image="image" />
+        </div>
+        <div v-else>
+            <p>{{getLang.noData}}</p>
         </div>
     </div>
 </template>
