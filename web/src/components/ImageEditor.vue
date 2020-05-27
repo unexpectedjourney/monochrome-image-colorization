@@ -228,6 +228,7 @@
                 const response = await axios.post("/api/colorize_file/", fd, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
+                await this.$router.push({name: 'images'})
             },
             setTool(type, params) {
                 this.currentActiveMethod = type;
@@ -252,7 +253,6 @@
                 await this.sleep(2000);
                 let image = this.$refs.editor.saveImage();
                 this.originalImage = this.dataURItoFile(image, this.originalImage.name);
-                await this.$router.push({name: 'images'})
             },
             async saveImageVersion(e) {
                 let image = this.$refs.editor.saveImage();
@@ -265,7 +265,10 @@
                 const response = await axios.post("/api/save_file/", fd, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
-                await this.$router.push({name: 'images'})
+                await this.$router.push({
+                    name: 'images',
+                    params: {id: this.imageData._id}
+                })
             },
             clear() {
                 this.currentActiveMethod = this.clear;

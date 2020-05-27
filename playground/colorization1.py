@@ -1,6 +1,6 @@
-import asyncio
 import colorsys
 import os
+import sys
 
 import cv2
 import matplotlib.pyplot as plt
@@ -8,11 +8,8 @@ import numpy as np
 from scipy import sparse
 from scipy.sparse import linalg
 
-from utils.database.file_version import insert_file_version
-from utils.files import generate_filename
-from utils.logger import setup_logger
-
-log = setup_logger(__name__)
+INPUT_DIR = "./input/"
+OUTPUT_DIR = "./output/"
 
 
 def yiq_to_rgb(y, i, q):
@@ -145,37 +142,24 @@ def colorize(original_filepath, marked_filepath, output_filepath):
     output_image = _colorize(output_image, marks)
     output_image = postprocess(output_image)
 
+    plt.imshow(output_image)
     plt.imsave(output_filepath, output_image)
+    plt.show()
 
 
-async def colorize_file(params):
-    log.info("Colorization has started")
-    original_filename = params.get("original_filename")
-    if not original_filename:
-        log.error("No 'original_filename' in params")
-        return
+def main():
+    args = sys.argv
+    if len(args) > 1:
+        filename = args[1]
+        original_filepath = f"{INPUT_DIR}/{filename}"
+        marked_filepath = f"{INPUT_DIR}/marked_{filename}"
+        output_filepath = f"{OUTPUT_DIR}/{filename}"
 
-    painted_filename = params.get("painted_filename")
-    if not painted_filename:
-        log.error("No 'painted_filename' in params")
-        return
+        colorize(original_filepath, marked_filepath, output_filepath)
 
-    pure_filename = params.get("pure_filename")
-    if not painted_filename:
-        log.error("No 'painted_filename' in params")
-        return
+    else:
+        print("Please, write filename as argument")
 
-    file_id = params.get("file_id")
-    if not file_id:
-        log.error("No 'file_id' in params")
-        return
 
-    colorized_filename = generate_filename(pure_filename)
-    log.info(colorized_filename)
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(
-        None, colorize, original_filename, painted_filename,
-        colorized_filename)
-    await insert_file_version(filepath=colorized_filename, file_id=file_id)
-    log.info("Colorization has finished")
-    return original_filename
+if __name__ == '__main__':
+    main()
