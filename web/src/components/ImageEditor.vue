@@ -83,8 +83,17 @@
                             :canvasHeight="canvasHeight"
                             ref="editor"
                     />
-                    <Chrome class="editor-panel" :value="color"
-                            @input="changeColor"></Chrome>
+                    <div>
+                        <Chrome class="editor-panel" :value="color"
+                                @input="changeColor"></Chrome>
+                        <div class="col brush-panel">
+                            <label for="volume" class="d-block ">Brush
+                                size</label>
+                            <input type="range" id="volume"
+                                   v-model="strokeWidth"
+                                   @change="changeDrawSize" min="1" max="11">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,7 +130,8 @@
                 croppedImage: false,
                 originalImage: null,
                 paintedImage: null,
-                projectTitle: ""
+                projectTitle: "",
+                strokeWidth: "5"
             };
         },
         props: {
@@ -179,11 +189,22 @@
                 this.currentActiveMethod = "";
                 this.$refs.editor.applyCropping();
             },
+            changeDrawSize() {
+                this.params = {
+                    stroke: this.color,
+                    strokeWidth: this.strokeWidth
+                }
+                this.setTool(this.currentActiveMethod, this.params);
+            },
             changeColor(color) {
                 const colorHex = color.hex;
                 this.color = colorHex;
                 this.$refs.editor.$data.color = colorHex;
-                this.setTool(this.currentActiveMethod);
+                this.params = {
+                    stroke: this.color,
+                    strokeWidth: this.strokeWidth
+                }
+                this.setTool(this.currentActiveMethod, this.params);
             },
             saveImage() {
                 let image = this.$refs.editor.saveImage();
@@ -316,6 +337,10 @@
 
     .editor-panel {
         margin-top: 20px;
+    }
+
+    .brush-panel {
+        margin-top: 10px;
     }
 
     .editor-canvas {
