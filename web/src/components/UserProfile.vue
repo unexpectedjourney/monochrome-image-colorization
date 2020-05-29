@@ -86,22 +86,22 @@
         },
         methods: {
             async getUserData() {
-                let response = await axios.get("/api/users/")
-                return response.data || {}
+                let response = await axios.get("/api/users/");
+                return response.data || {};
             },
             async updateUser() {
                 let data = {
                     first_name: this.user.first_name,
                     last_name: this.user.last_name,
                     email: this.user.email,
-                }
+                };
                 let response = await axios.put(`/api/users/${this.user._id}/`, data, {
                     headers: {
                         'Access-Control-Allow-Origin': '*',
                     }
-                })
-                this.user = response.data || {}
-                this.isUpdating = false
+                });
+                this.user = response.data || {};
+                this.isUpdating = false;
             }
         }
     }

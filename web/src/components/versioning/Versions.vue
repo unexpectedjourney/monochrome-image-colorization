@@ -21,7 +21,7 @@
             }
         },
         async created() {
-            this.image = await this.getImageVersions()
+            this.image = await this.getImageVersions();
         },
         methods: {
             async getImageVersions() {
@@ -32,10 +32,10 @@
                             'Access-Control-Allow-Origin': '*',
                         }
                     });
-                return response.data || {}
+                return response.data || {};
             },
             getVersionIndex(index) {
-                return this.image.versions.length - index
+                return this.image.versions.length - index;
             }
         }
     }

@@ -37,7 +37,16 @@ export const localization = {
     addedNote: "додали помітку в",
     deletedNote: "видалили помітку в",
     noData: "Немає даних",
-    you: "Ви"
+    you: "Ви",
+    semiAutomaticColorization: "Напівавтоматична колоризація",
+    diplomaTopic: "Добрий день! Цей проект - моя дипломноа робота з теми",
+    topic: "\"Веб-орієнтована система напівавтоматичної колоризації монохромних зображень в градаціях сірого кольору\"",
+    workAllows: "Ця робота дозволяє вам",
+    firstAllow: "Розфарбовувати зображення в градаціях сірого кольору",
+    secondAllow: "Переглядати власних відредагованих зображень",
+    thirdAllow: "Переглянути власну історію на цьому веб-сайті",
+    fourthAllow: "Переглядати версії своїх зображень",
+    fifthAllow: "Редагувати власні зображення",
   },
   en: {
     flag: true,
@@ -77,6 +86,15 @@ export const localization = {
     addedNote: "has added note at",
     deletedNote: "has deleted note at",
     noData: "No data",
-    you: "You"
+    you: "You",
+    semiAutomaticColorization: "Semi-automatic colorization",
+    diplomaTopic: "Hello! This is a project for my diploma work on the topic",
+    topic: "\"Web-oriented system for semi-automatic colorization of monochrome images in grayscale\"",
+    workAllows: "This work allows you",
+    firstAllow: "Colorize grayscale images",
+    secondAllow: "View own edited images",
+    thirdAllow: "View own history on this web-site",
+    fourthAllow: "View versions of your images",
+    fifthAllow: "Edit own images",
   }
 };

@@ -81,7 +81,7 @@
         },
         methods: {
             getFilepathWrapper() {
-                return filepath.getFilepath(this.image.filepath)
+                return filepath.getFilepath(this.image.filepath);
             },
             async getImage() {
                 const response = await axios.get(
@@ -91,29 +91,29 @@
                             'Access-Control-Allow-Origin': '*',
                         }
                     });
-                return response.data || {}
+                return response.data || {};
             },
             getCommentsNumber() {
-                return this.image.notes.length
+                return this.image.notes.length;
             },
             async addNote(event) {
                 if (event) {
-                    event.preventDefault()
+                    event.preventDefault();
                 }
                 let data = {
                     "text": this.commentText,
                     "file_id": this.image._id
                 }
-                this.image.notes.unshift({"text": this.commentText})
-                this.commentText = ""
-                const response = await axios.post("/api/note/", data)
+                this.image.notes.unshift({"text": this.commentText});
+                this.commentText = "";
+                const response = await axios.post("/api/note/", data);
                 this.image = await this.getImage();
             },
             async removeNote(id) {
                 this.image.notes = this.image.notes.filter(
                     note => note._id !== id
                 );
-                const response = await axios.delete(`/api/note/${id}/`)
+                const response = await axios.delete(`/api/note/${id}/`);
             }
         }
     }

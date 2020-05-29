@@ -35,10 +35,10 @@
         },
         methods: {
             getFilepathWrapper() {
-                return filepath.getFilepath(this.version.filepath)
+                return filepath.getFilepath(this.version.filepath);
             },
             getDateWrapper() {
-                return date.getDate(this.version.created_at)
+                return date.getDate(this.version.created_at);
             }
         }
     }
