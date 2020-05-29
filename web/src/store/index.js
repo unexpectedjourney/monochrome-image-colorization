@@ -9,17 +9,17 @@ export default new Vuex.Store({
   },
   getters: {
     getLocalization(state) {
-      return state.enLocalization
+      return state.enLocalization;
     }
   },
   mutations: {
     changeLoc(state) {
-      state.enLocalization = !state.enLocalization
+      state.enLocalization = !state.enLocalization;
     }
   },
   actions: {
     changeLocalization(context) {
-      context.commit('changeLoc')
+      context.commit('changeLoc');
     }
   }
 })

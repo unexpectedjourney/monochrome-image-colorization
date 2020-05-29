@@ -20,6 +20,7 @@
     import axios from 'axios';
     import accessToken from '../../helpers/access-token';
     import {localization} from "../../localization/localization";
+
     export default {
         name: 'login',
         data() {
@@ -42,10 +43,12 @@
                     username: this.username,
                     password: this.password,
                 });
-                const token = response.data.token;
-                accessToken.setToken(token);
-                console.log(token);
-                this.$router.push({ name: 'home' });
+                if (response.status === 202) {
+                    const token = response.data.token;
+                    accessToken.setToken(token);
+                    console.log(token);
+                }
+                await this.$router.push({name: 'home'});
             }
         }
     }
