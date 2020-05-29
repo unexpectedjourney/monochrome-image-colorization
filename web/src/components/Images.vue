@@ -27,7 +27,7 @@
             };
         },
         async created() {
-            this.images = await this.getImages()
+            this.images = await this.getImages();
         },
         computed: {
             getLang() {
@@ -40,7 +40,7 @@
         methods: {
             async getImages() {
                 const response = await axios.get("/api/images/");
-                return response.data || []
+                return response.data || [];
             }
         }
     }

@@ -28,7 +28,7 @@
         },
         methods: {
             getFilepathWrapper() {
-                return filepath.getFilepath(this.image.filepath)
+                return filepath.getFilepath(this.image.filepath);
             },
         }
     }

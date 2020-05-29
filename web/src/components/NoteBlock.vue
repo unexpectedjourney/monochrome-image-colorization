@@ -30,7 +30,7 @@
         },
         methods: {
             getDateWrapper() {
-                return date.getDate(this.note.created_at)
+                return date.getDate(this.note.created_at);
             },
         }
     }

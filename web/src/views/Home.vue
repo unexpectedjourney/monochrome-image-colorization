@@ -1,21 +1,35 @@
 <template>
-  <div class="home">
-    <main role="main" class="container">
-      <div class="starter-template">
-        <h1>Semi-automatic colorization</h1>
-        <p class="lead">Hello! This is a project for my dimploma work on the topic <br>"Web-oriented system for semi-automatic colorization of monochrome images in grayscale"</p>
-        <br>
-        <h3>This work allows you:</h3><p>1. Colorize grayscale images<br>2. View own edited images<br>3. View own history on this web-site<br>
-        4. View versions of your images<br> 5. Edit own images
-        </p>
-      </div>
+    <div class="home">
+        <main role="main" class="container">
+            <div class="starter-template">
+                <h1>{{getLang.semiAutomaticColorization}}</h1>
+                <p class="lead">{{getLang.diplomaTopic}} <br>{{getLang.topic}}</p>
+                <br>
+                <h3>{{getLang.workAllows}}:</h3>
+                <p>1. {{getLang.firstAllow}}<br>
+                    2. {{getLang.secondAllow}}<br>
+                    3. {{getLang.thirdAllow}}<br>
+                    4. {{getLang.fourthAllow}}<br>
+                    5. {{getLang.fifthAllow}}
+                </p>
+            </div>
 
-    </main>
-  </div>
+        </main>
+    </div>
 </template>
 
 <script>
-export default {
-  name: 'Home',
-}
+    import {localization} from "../localization/localization";
+
+    export default {
+        name: 'Home',
+        computed: {
+            getLang() {
+                if (this.$store.getters.getLocalization) {
+                    return localization.en;
+                }
+                return localization.ua;
+            },
+        },
+    }
 </script>

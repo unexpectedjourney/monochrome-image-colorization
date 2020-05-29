@@ -28,7 +28,7 @@
             }
         },
         async created() {
-            this.history = await this.getUserHistory()
+            this.history = await this.getUserHistory();
         },
         methods: {
             async getUserHistory() {
@@ -40,7 +40,7 @@
                         }
                     }
                 );
-                return response.data || []
+                return response.data || [];
             }
         },
         computed: {

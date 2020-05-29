@@ -228,7 +228,7 @@
                 const response = await axios.post("/api/colorize_file/", fd, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
-                await this.$router.push({name: 'images'})
+                await this.$router.push({name: 'images'});
             },
             setTool(type, params) {
                 this.currentActiveMethod = type;
@@ -245,7 +245,7 @@
                             'Access-Control-Allow-Origin': '*',
                         }
                     });
-                return response.data || {}
+                return response.data || {};
             },
             async uploadImage(e) {
                 this.$refs.editor.uploadImage(e);
@@ -268,7 +268,7 @@
                 await this.$router.push({
                     name: 'images',
                     params: {id: this.imageData._id}
-                })
+                });
             },
             clear() {
                 this.currentActiveMethod = this.clear;

@@ -3,6 +3,6 @@ export default {
         if (date) {
             return date.split("T")[0];
         }
-        return new Date().toISOString().split("T")[0]
+        return new Date().toISOString().split("T")[0];
     }
 }
