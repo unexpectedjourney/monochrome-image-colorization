@@ -5,6 +5,7 @@ import os
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
+from PIL import Image
 from scipy import sparse
 from scipy.sparse import linalg
 
@@ -148,6 +149,18 @@ def colorize(original_filepath, marked_filepath, output_filepath):
     plt.imsave(output_filepath, output_image)
 
 
+def add_background(filepath):
+    image = Image.open(filepath)
+    size = (300, 300)
+    image.thumbnail(size, Image.ANTIALIAS)
+    new = Image.new('RGBA', size, (255, 255, 255, 0))  # with alpha
+    new.paste(
+        image, ((int(size[0] - image.size[0]) / 2),
+                int((size[1] - image.size[1]) // 2))
+    )
+    new.save(filepath)
+
+
 async def colorize_file(params):
     log.info("Colorization has started")
     original_filename = params.get("original_filename")
@@ -176,6 +189,9 @@ async def colorize_file(params):
     await loop.run_in_executor(
         None, colorize, original_filename, painted_filename,
         colorized_filename)
+
+    await loop.run_in_executor(None, add_background, colorized_filename)
+
     await insert_file_version(filepath=colorized_filename, file_id=file_id)
     log.info("Colorization has finished")
     return original_filename

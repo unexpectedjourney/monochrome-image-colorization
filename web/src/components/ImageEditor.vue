@@ -121,7 +121,13 @@
                 croppedImage: false,
                 originalImage: null,
                 paintedImage: null,
-                projectTitle: ""
+                projectTitle: "",
+                scopes: {
+                    top: 0,
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                }
             };
         },
         props: {
@@ -171,6 +177,23 @@
             );
         },
         methods: {
+            getScopes(width, height) {
+                if (height >= width) {
+                    let new_height = 300;
+                    let new_width = width * 300 / height;
+                    this.scopes.top = 0;
+                    this.scopes.left = (300 - new_width) / 2;
+                    this.scopes.right = 300 - this.scopes.left;
+                    this.scopes.bottom = 300;
+                } else {
+                    let new_height = height * 300 / width;
+                    let new_width = 300;
+                    this.scopes.top = (300 - new_height) / 2;
+                    this.scopes.left = 0;
+                    this.scopes.right = 300;
+                    this.scopes.bottom = 300 - this.scopes.top;
+                }
+            },
             cropImage() {
                 this.currentActiveMethod = "crop";
                 this.setTool("crop");
@@ -225,6 +248,11 @@
                 fd.append("originalImage", this.originalImage);
                 fd.append("paintedImage", file);
                 fd.append("projectTitle", this.projectTitle);
+                fd.append("top", this.scopes.top);
+                fd.append("bottom", this.scopes.bottom);
+                fd.append("left", this.scopes.left);
+                fd.append("right", this.scopes.right);
+
                 const response = await axios.post("/api/colorize_file/", fd, {
                     headers: {"Content-Type": "multipart/form-data"}
                 });
@@ -247,11 +275,29 @@
                     });
                 return response.data || {};
             },
+            async getImageSize(file) {
+                let reader = new FileReader;
+                let width = 0;
+                let height = 0;
+                reader.onload = evt => {
+                    let image = new Image();
+                    image.onload = e => {
+                        width = image.width;
+                        height = image.height;
+                    };
+                    image.src = evt.target.result;
+                };
+                reader.readAsDataURL(file);
+                await this.sleep(500);
+                return [width, height]
+            },
             async uploadImage(e) {
                 this.$refs.editor.uploadImage(e);
                 this.originalImage = e.target.files[0];
                 await this.sleep(2000);
                 let image = this.$refs.editor.saveImage();
+                let imageSizes = await this.getImageSize(e.target.files[0]);
+                this.getScopes(imageSizes[0], imageSizes[1]);
                 this.originalImage = this.dataURItoFile(image, this.originalImage.name);
             },
             async saveImageVersion(e) {
