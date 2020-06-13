@@ -29,7 +29,7 @@
                        class="form-control text-center"
                        :placeholder="[[ getLang.email ]]"
                        v-model="user.email" required>
-                <label for="inputUsername">{{getLang.Email}}</label>
+                <label for="inputUsername">{{getLang.email}}</label>
             </div>
             <div>
                 <button type="button" class="btn btn-success edit_button"

@@ -259,6 +259,11 @@
                 await this.$router.push({name: 'images'});
             },
             setTool(type, params) {
+                if (type === "freeDrawing") {
+                    params = {
+                        strokeWidth: 3
+                    }
+                }
                 this.currentActiveMethod = type;
                 this.$refs.editor.set(type, params);
             },
