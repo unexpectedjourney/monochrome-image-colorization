@@ -12,7 +12,7 @@ export const localization = {
     home: "Головна",
     newProject: "Новий проект",
     firstName: "Ім'я",
-    lastName: "Прізвизе",
+    lastName: "Прізвище",
     email: "Email",
     save: "Зберегти",
     cancel: "Відмінити",
