@@ -1,6 +1,8 @@
 import os
 import uuid
 
+from PIL import Image
+
 from utils.constants import UPLOAD_PATH
 from utils.logger import setup_logger
 
@@ -38,11 +40,18 @@ async def save_file(field):
     return filename, pure_filename
 
 
+def crop_image(filepath, left, top, right, bottom):
+    im = Image.open(filepath)
+    im = im.convert('RGB')
+    im = im.crop((left, top, right, bottom))
+    im.save(filepath)
+
+
 async def handle_file_upload(request):
     (
         original_filename, painted_filename, pure_filename, image_title
     ) = None, None, None, None
-
+    left, top, right, bottom = (0, 0, 0, 0)
     async for field in (await request.multipart()):
         if field.name == "originalImage":
             original_filename, pure_filename = await save_file(field)
@@ -50,5 +59,14 @@ async def handle_file_upload(request):
             painted_filename, pure_filename = await save_file(field)
         elif field.name == "projectTitle":
             image_title = (await field.read()).decode("utf-8")
-
+        elif field.name == "top":
+            top = int(float((await field.read()).decode("utf-8")))
+        elif field.name == "bottom":
+            bottom = int(float((await field.read()).decode("utf-8")))
+        elif field.name == "left":
+            left = int(float((await field.read()).decode("utf-8")))
+        elif field.name == "right":
+            right = int(float((await field.read()).decode("utf-8")))
+    for path_data in (original_filename, painted_filename):
+        crop_image(path_data, left, top, right, bottom)
     return original_filename, painted_filename, pure_filename, image_title
