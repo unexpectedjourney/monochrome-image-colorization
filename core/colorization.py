@@ -155,7 +155,7 @@ def add_background(filepath):
     image.thumbnail(size, Image.ANTIALIAS)
     new = Image.new('RGBA', size, (255, 255, 255, 0))  # with alpha
     new.paste(
-        image, ((int(size[0] - image.size[0]) / 2),
+        image, ((int(size[0] - image.size[0]) // 2),
                 int((size[1] - image.size[1]) // 2))
     )
     new.save(filepath)
